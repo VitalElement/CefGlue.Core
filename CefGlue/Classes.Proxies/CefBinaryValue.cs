@@ -23,7 +23,7 @@
 
             fixed (byte* data_ptr = data)
             {
-                var value = cef_binary_value_t.create(data_ptr, (UIntPtr)data.LongLength);
+                var value = cef_binary_value_t.create(data_ptr, (UIntPtr)data.Length);
                 return CefBinaryValue.FromNative(value);
             }
         }
@@ -88,7 +88,7 @@
         /// </summary>
         public long GetData(byte[] buffer, long bufferSize, long dataOffset)
         {
-            if (buffer.LongLength < dataOffset + bufferSize) throw new ArgumentOutOfRangeException("dataOffset");
+            if (buffer.Length < dataOffset + bufferSize) throw new ArgumentOutOfRangeException("dataOffset");
 
             fixed (byte* buffer_ptr = buffer)
             {

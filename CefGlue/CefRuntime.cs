@@ -22,14 +22,14 @@
         #region Platform Detection
         private static CefRuntimePlatform DetectPlatform()
         {
-            var platformId = Environment.OSVersion.Platform;
+            /*var platformId = Environment.OSVersion.Platform;
 
             if (platformId == PlatformID.MacOSX)
                 return CefRuntimePlatform.MacOSX;
 
             int p = (int)platformId;
             if ((p == 4) || (p == 128))
-                return IsRunningOnMac() ? CefRuntimePlatform.MacOSX : CefRuntimePlatform.Linux;
+                return IsRunningOnMac() ? CefRuntimePlatform.MacOSX : CefRuntimePlatform.Linux;*/
 
             return CefRuntimePlatform.Windows;
         }
@@ -133,9 +133,9 @@
             try
             {
                 var n_actual = libcef.api_hash(0);
-                actual = n_actual != null ? new string(n_actual) : null;
+                actual = n_actual != null ? new string((char*)n_actual) : null;
             }
-            catch (EntryPointNotFoundException ex)
+            catch (Exception ex)
             {
                 throw new NotSupportedException("cef_api_hash call is not supported.", ex);
             }
