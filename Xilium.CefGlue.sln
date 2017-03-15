@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefGlue", "CefGlue\CefGlue.csproj", "{703FF300-34B9-48D4-A5D6-E741F48D5F95}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefGlue.Avalonia", "CefGlue.Avalonia\CefGlue.Avalonia.csproj", "{BF53C1EA-46E0-4515-993A-4CAF4BD030A1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefGlue.Samples.Avalonia", "CefGlue.Samples.Avalonia\CefGlue.Samples.Avalonia.csproj", "{6364345A-221B-4688-B6EE-4AF496BFA8AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,22 @@ Global
 		{703FF300-34B9-48D4-A5D6-E741F48D5F95}.Release|Any CPU.Build.0 = Release|Any CPU
 		{703FF300-34B9-48D4-A5D6-E741F48D5F95}.Release|x86.ActiveCfg = Release|Any CPU
 		{703FF300-34B9-48D4-A5D6-E741F48D5F95}.Release|x86.Build.0 = Release|Any CPU
+		{BF53C1EA-46E0-4515-993A-4CAF4BD030A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF53C1EA-46E0-4515-993A-4CAF4BD030A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF53C1EA-46E0-4515-993A-4CAF4BD030A1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BF53C1EA-46E0-4515-993A-4CAF4BD030A1}.Debug|x86.Build.0 = Debug|Any CPU
+		{BF53C1EA-46E0-4515-993A-4CAF4BD030A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF53C1EA-46E0-4515-993A-4CAF4BD030A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF53C1EA-46E0-4515-993A-4CAF4BD030A1}.Release|x86.ActiveCfg = Release|Any CPU
+		{BF53C1EA-46E0-4515-993A-4CAF4BD030A1}.Release|x86.Build.0 = Release|Any CPU
+		{6364345A-221B-4688-B6EE-4AF496BFA8AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6364345A-221B-4688-B6EE-4AF496BFA8AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6364345A-221B-4688-B6EE-4AF496BFA8AB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6364345A-221B-4688-B6EE-4AF496BFA8AB}.Debug|x86.Build.0 = Debug|Any CPU
+		{6364345A-221B-4688-B6EE-4AF496BFA8AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6364345A-221B-4688-B6EE-4AF496BFA8AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6364345A-221B-4688-B6EE-4AF496BFA8AB}.Release|x86.ActiveCfg = Release|Any CPU
+		{6364345A-221B-4688-B6EE-4AF496BFA8AB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

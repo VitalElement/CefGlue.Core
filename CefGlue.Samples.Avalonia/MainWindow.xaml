@@ -1,0 +1,5 @@
+﻿<Window xmlns="https://github.com/avaloniaui" MinWidth="500" MinHeight="300"
+        Title="Avalonia Control Gallery"        
+        xmlns:local="clr-namespace:ControlCatalog;assembly=ControlCatalog">
+    <TextBlock>Test</TextBlock>
+</Window>

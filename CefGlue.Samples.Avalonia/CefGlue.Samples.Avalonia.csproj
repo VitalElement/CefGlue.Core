@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <AssemblyName>ControlCatalog</AssemblyName>
+    <RootNamespace>ControlCatalog</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="App.xaml" />
+    <None Remove="MainView.xaml" />
+    <None Remove="MainWindow.xaml" />
+    <None Remove="SideBar.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="App.xaml" />
+    <EmbeddedResource Include="MainView.xaml" />
+    <EmbeddedResource Include="MainWindow.xaml" />
+    <EmbeddedResource Include="SideBar.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Skia.Desktop" Version="0.4.1-build2859-alpha" />
+    <PackageReference Include="Avalonia.Win32" Version="0.4.1-build2859-alpha" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CefGlue.Avalonia\CefGlue.Avalonia.csproj" />
+    <ProjectReference Include="..\CefGlue\CefGlue.csproj" />
+  </ItemGroup>
+
+</Project>
