@@ -7,7 +7,7 @@
 
     internal static partial class NativeMethods
     {
-        [DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        [DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
         public static extern IntPtr GetModuleHandle(string lpModuleName);
 
         [DllImport("kernel32.dll", SetLastError = true)]

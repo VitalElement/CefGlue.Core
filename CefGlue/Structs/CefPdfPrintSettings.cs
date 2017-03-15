@@ -4,8 +4,7 @@
     using System.Collections.Generic;
     using System.Text;
     using Xilium.CefGlue.Interop;
-
-    [Serializable]
+    
     public sealed class CefPdfPrintSettings
     {
         public string HeaderFooterTitle { get; set; }
