@@ -54,7 +54,7 @@ namespace CefGlue.Avalonia
 
         protected override void OnPopupSize(CefBrowser browser, CefRectangle rect)
         {
-            _owner.OnPopupSize(rect);
+           // _owner.OnPopupSize(rect);
         }
 
         protected override void OnPaint(CefBrowser browser, CefPaintElementType type, CefRectangle[] dirtyRects, IntPtr buffer, int width, int height)
@@ -73,8 +73,8 @@ namespace CefGlue.Avalonia
         {
             _uiHelper.PerformInUiThread(() =>
             {
-                Cursor cursor = CursorInteropHelper.Create(new SafeFileHandle(cursorHandle, false));
-                _owner.Cursor = cursor;
+                //Cursor cursor = CursorInteropHelper.Create(new SafeFileHandle(cursorHandle, false));
+                //_owner.Cursor = cursor;
             });
         }
 

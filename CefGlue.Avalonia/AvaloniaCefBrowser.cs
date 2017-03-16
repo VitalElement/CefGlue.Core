@@ -8,10 +8,11 @@ using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Avalonia.Input;
 using Avalonia.VisualTree;
+using Avalonia.Controls.Primitives;
 
 namespace CefGlue.Avalonia
 {
-    class AvaloniaCefBrowser : ContentControl
+    public class AvaloniaCefBrowser : ContentControl
     {
         private bool _disposed;
         private bool _created;
@@ -30,6 +31,10 @@ namespace CefGlue.Avalonia
 
         private ToolTip _tooltip;
         private DispatcherTimer _tooltipTimer;
+
+        private Popup _popup;
+        private Image _popupImage;
+        private WritableBitmap _popupImageBitmap;
 
         public string StartUrl { get; set; }
         public bool AllowsTransparency { get; set; }
@@ -464,6 +469,46 @@ namespace CefGlue.Avalonia
             return true;
         }
 
+        public event LoadStartEventHandler LoadStart;
+        public event LoadEndEventHandler LoadEnd;
+        public event LoadingStateChangeEventHandler LoadingStateChange;
+        public event LoadErrorEventHandler LoadError;
+
+
+        internal void OnLoadStart(CefFrame frame)
+        {
+            if (this.LoadStart != null)
+            {
+                var e = new LoadStartEventArgs(frame);
+                this.LoadStart(this, e);
+            }
+        }
+
+        internal void OnLoadEnd(CefFrame frame, int httpStatusCode)
+        {
+            if (this.LoadEnd != null)
+            {
+                var e = new LoadEndEventArgs(frame, httpStatusCode);
+                this.LoadEnd(this, e);
+            }
+        }
+        internal void OnLoadingStateChange(bool isLoading, bool canGoBack, bool canGoForward)
+        {
+            if (this.LoadingStateChange != null)
+            {
+                var e = new LoadingStateChangeEventArgs(isLoading, canGoBack, canGoForward);
+                this.LoadingStateChange(this, e);
+            }
+        }
+        internal void OnLoadError(CefFrame frame, CefErrorCode errorCode, string errorText, string failedUrl)
+        {
+            if (this.LoadError != null)
+            {
+                var e = new LoadErrorEventArgs(frame, errorCode, errorText, failedUrl);
+                this.LoadError(this, e);
+            }
+        }
+
         private void UpdateTooltip(string text)
         {
             Dispatcher.UIThread.InvokeAsync(
@@ -572,7 +617,7 @@ namespace CefGlue.Avalonia
                 {
                     
                 }
-            }));
+            });
 
             screenX = (int)ptScreen.X;
             screenY = (int)ptScreen.Y;
@@ -593,7 +638,7 @@ namespace CefGlue.Avalonia
                 {
                     if (_browserSizeChanged)
                     {
-                        _browserPageBitmap = new WriteableBitmap((int)_browserWidth, (int)_browserHeight, 96, 96, AllowsTransparency ? PixelFormats.Bgra32 : PixelFormats.Bgr32, null);
+                        //_browserPageBitmap = new WriteableBitmap((int)_browserWidth, (int)_browserHeight, 96, 96, AllowsTransparency ? PixelFormats.Bgra32 : PixelFormats.Bgr32, null);
                         _browserPageImage.Source = _browserPageBitmap;
 
                         _browserSizeChanged = false;
@@ -634,14 +679,14 @@ namespace CefGlue.Avalonia
 
                             int adjustedHeight = dirtyRect.Height;
 
-                            Int32Rect sourceRect = new Int32Rect(dirtyRect.X, dirtyRect.Y, adjustedWidth, adjustedHeight);
+                            Rect sourceRect = new Rect(dirtyRect.X, dirtyRect.Y, adjustedWidth, adjustedHeight);
 
-                            _popupImageBitmap.WritePixels(sourceRect, sourceBuffer, sourceBufferSize, stride, dirtyRect.X, dirtyRect.Y);
+                           // _popupImageBitmap.WritePixels(sourceRect, sourceBuffer, sourceBufferSize, stride, dirtyRect.X, dirtyRect.Y);
                         }
-                    }));
+                    });
         }
 
-        private void DoRenderBrowser(WriteableBitmap bitmap, int browserWidth, int browserHeight, CefRectangle[] dirtyRects, IntPtr sourceBuffer)
+        private void DoRenderBrowser(WritableBitmap bitmap, int browserWidth, int browserHeight, CefRectangle[] dirtyRects, IntPtr sourceBuffer)
         {
             int stride = browserWidth * 4;
             int sourceBufferSize = stride * browserHeight;            
@@ -672,8 +717,8 @@ namespace CefGlue.Avalonia
                 //}
 
                 // Update the dirty region
-                Int32Rect sourceRect = new Int32Rect((int)dirtyRect.X, (int)dirtyRect.Y, adjustedWidth, adjustedHeight);
-                bitmap.WritePixels(sourceRect, sourceBuffer, sourceBufferSize, stride, (int)dirtyRect.X, (int)dirtyRect.Y);
+                var sourceRect = new Rect((int)dirtyRect.X, (int)dirtyRect.Y, adjustedWidth, adjustedHeight);
+                //bitmap.WritePixels(sourceRect, sourceBuffer, sourceBufferSize, stride, (int)dirtyRect.X, (int)dirtyRect.Y);
 
                 // 			int adjustedWidth = browserWidth;
                 // 			if (browserWidth > (int)bitmap.Width)
