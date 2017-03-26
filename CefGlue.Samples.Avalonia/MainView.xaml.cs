@@ -9,8 +9,7 @@ namespace ControlCatalog
     {
         public MainView()
         {
-            this.InitializeComponent();
-            CefBrowserHost.CreateBrowser()
+            this.InitializeComponent();            
         }
 
         private void InitializeComponent()
