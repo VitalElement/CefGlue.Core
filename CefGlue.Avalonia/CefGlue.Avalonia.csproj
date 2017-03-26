@@ -4,6 +4,20 @@
     <TargetFramework>netstandard1.6</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="AvaloniaCefBrowser.xaml" />
+    <None Remove="AvaloniaCefBrowserTheme.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="AvaloniaCefBrowser.xaml" />
+    <EmbeddedResource Include="AvaloniaCefBrowserTheme.xaml" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.4.1-build2859-alpha" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
