@@ -9,10 +9,15 @@ using Avalonia.Threading;
 using Avalonia.Input;
 using Avalonia.VisualTree;
 using Avalonia.Controls.Primitives;
+using Avalonia.Media;
+using System.Runtime.InteropServices;
+using Avalonia.Platform;
+using System.Security;
+using System.Linq;
 
 namespace CefGlue.Avalonia
 {
-    public class AvaloniaCefBrowser : ContentControl
+    public class AvaloniaCefBrowser : TemplatedControl
     {
         private bool _disposed;
         private bool _created;
@@ -39,6 +44,18 @@ namespace CefGlue.Avalonia
         public string StartUrl { get; set; }
         public bool AllowsTransparency { get; set; }
         public Key Keys { get; private set; }
+        
+
+        public AvaloniaCefBrowser()
+        {
+        }
+
+        protected override void OnTemplateApplied(TemplateAppliedEventArgs e)
+        {
+            base.OnTemplateApplied(e);    
+
+            _browserPageImage = e.NameScope.Find<Image>("PART_Image");
+        }
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
@@ -457,13 +474,13 @@ namespace CefGlue.Avalonia
         {
             if (string.IsNullOrEmpty(text))
             {
-                _tooltipTimer.Stop();
+               // _tooltipTimer.Stop();
                 UpdateTooltip(null);
             }
             else
             {
-                _tooltipTimer.Tick += (sender, args) => UpdateTooltip(text);
-                _tooltipTimer.Start();
+             /*   _tooltipTimer.Tick += (sender, args) => UpdateTooltip(text);
+                _tooltipTimer.Start();*/
             }
 
             return true;
@@ -527,7 +544,7 @@ namespace CefGlue.Avalonia
                         }
                     });
 
-            _tooltipTimer.Stop();
+            //_tooltipTimer.Stop();
         }
 
         public void HandleAfterCreated(CefBrowser browser)
@@ -536,7 +553,7 @@ namespace CefGlue.Avalonia
 
             bool hasAlreadyBeenInitialized = false;
 
-            Dispatcher.UIThread.InvokeAsync(() =>
+            Dispatcher.UIThread.InvokeTaskAsync(() =>
             {
                 if (_browser != null)
                 {
@@ -551,14 +568,14 @@ namespace CefGlue.Avalonia
                     width = (int)_browserWidth;
                     height = (int)_browserHeight;
                 }
-            });
+            }).Wait();
 
             // Make sure we don't initialize ourselves more than once. That seems to break things.
             if (hasAlreadyBeenInitialized)
                 return;
 
             if (width > 0 && height > 0)
-                _browserHost.WasResized();
+                _browserHost.WasResized();            
 
             // 			mainUiDispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
             // 			{
@@ -638,7 +655,7 @@ namespace CefGlue.Avalonia
                 {
                     if (_browserSizeChanged)
                     {
-                        //_browserPageBitmap = new WriteableBitmap((int)_browserWidth, (int)_browserHeight, 96, 96, AllowsTransparency ? PixelFormats.Bgra32 : PixelFormats.Bgr32, null);
+                        _browserPageBitmap = new WritableBitmap((int)_browserWidth, (int)_browserHeight, PixelFormat.Bgra8888);//new WriteableBitmap((int)_browserWidth, (int)_browserHeight, 96, 96, AllowsTransparency ? PixelFormats.Bgra32 : PixelFormats.Bgr32, null);
                         _browserPageImage.Source = _browserPageBitmap;
 
                         _browserSizeChanged = false;
@@ -718,6 +735,9 @@ namespace CefGlue.Avalonia
 
                 // Update the dirty region
                 var sourceRect = new Rect((int)dirtyRect.X, (int)dirtyRect.Y, adjustedWidth, adjustedHeight);
+                
+                
+
                 //bitmap.WritePixels(sourceRect, sourceBuffer, sourceBufferSize, stride, (int)dirtyRect.X, (int)dirtyRect.Y);
 
                 // 			int adjustedWidth = browserWidth;
@@ -734,7 +754,20 @@ namespace CefGlue.Avalonia
                 // 			Int32Rect sourceRect = new Int32Rect(0, 0, adjustedWidth, adjustedHeight);
                 // 			bitmap.WritePixels(sourceRect, sourceBuffer, sourceBufferSize, stride, 0, 0);
             }
+
+            using (var l = bitmap.Lock())
+            {
+                byte[] managedArray = new byte[sourceBufferSize];
+
+                Marshal.Copy(sourceBuffer, managedArray, 0, sourceBufferSize);
+
+                Marshal.Copy(managedArray, 0, l.Address, sourceBufferSize);
+
+                InvalidateVisual();
+            }
         }
+
+        byte count = 0;
 
         internal void OnPopupShow(bool show)
         {
