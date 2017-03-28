@@ -64,7 +64,7 @@ namespace ControlCatalog
                 SingleProcess = false,
                 WindowlessRenderingEnabled = true,
                 MultiThreadedMessageLoop = true,
-                LogSeverity = CefLogSeverity.Verbose,
+                LogSeverity = CefLogSeverity.Disable,
                 LogFile = "cef.log",
             };
 
