@@ -1442,6 +1442,11 @@ namespace CefGlue.Avalonia
                             IsSystemKey = arg.Key == Key.System,
                         };
 
+                        if(arg.Key == Key.Enter)
+                        {
+                            keyEvent.EventType = CefKeyEventType.Char;
+                        }
+
                         keyEvent.Modifiers = GetKeyboardModifiers(arg.Modifiers);
 
                         _browserHost.SendKeyEvent(keyEvent);
