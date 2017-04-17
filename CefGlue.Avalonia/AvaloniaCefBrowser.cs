@@ -1653,7 +1653,7 @@ namespace CefGlue.Avalonia
 
             bool hasAlreadyBeenInitialized = false;
 
-            Dispatcher.UIThread.InvokeTaskAsync(() =>
+            //Dispatcher.UIThread.InvokeTaskAsync(() =>
             {
                 if (_browser != null)
                 {
@@ -1669,7 +1669,7 @@ namespace CefGlue.Avalonia
                     width = (int)_browserWidth;
                     height = (int)_browserHeight;
                 }
-            }).Wait();
+            }//);
 
             // Make sure we don't initialize ourselves more than once. That seems to break things.
             if (hasAlreadyBeenInitialized)
@@ -1724,7 +1724,7 @@ namespace CefGlue.Avalonia
         {
             Point ptScreen = new Point();
 
-            Dispatcher.UIThread.InvokeAsync(()=>
+            //Dispatcher.UIThread.InvokeAsync(()=>
             {
                 try
                 {
@@ -1735,7 +1735,7 @@ namespace CefGlue.Avalonia
                 {
                     
                 }
-            });
+            }//);
 
             screenX = (int)ptScreen.X;
             screenY = (int)ptScreen.Y;
@@ -1747,7 +1747,7 @@ namespace CefGlue.Avalonia
             // This is dirty precheck to do not do Invoke whenever is possible.
             if (_browserSizeChanged && (width != _browserWidth || height != _browserHeight)) return;
 
-            Dispatcher.UIThread.InvokeAsync(()=>
+            //Dispatcher.UIThread.InvokeAsync(()=>
             {
                 // Actual browser size changed check.
                 if (_browserSizeChanged && (width != _browserWidth || height != _browserHeight)) return;
@@ -1771,7 +1771,7 @@ namespace CefGlue.Avalonia
                 catch (Exception ex)
                 {                    
                 }
-            });
+            }//);
         }
 
         internal void HandlePopupPaint(int width, int height, CefRectangle[] dirtyRects, IntPtr sourceBuffer)
