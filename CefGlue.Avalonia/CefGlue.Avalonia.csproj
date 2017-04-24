@@ -23,8 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.4.1-build2859-alpha" />
+    <PackageReference Include="Avalonia" Version="0.4.1-build2959-alpha" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
+    <PackageReference Include="VitalElement.CefGlue.NativeSupport" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>
