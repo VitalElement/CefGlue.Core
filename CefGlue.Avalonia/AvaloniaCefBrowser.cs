@@ -15,6 +15,7 @@ using Avalonia.Platform;
 using System.Security;
 using System.Linq;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace CefGlue.Avalonia
 {
@@ -1095,6 +1096,7 @@ namespace CefGlue.Avalonia
         }
     }
 
+
     public class AvaloniaCefBrowser : TemplatedControl
     {
         private bool _disposed;
@@ -1119,19 +1121,18 @@ namespace CefGlue.Avalonia
         private Image _popupImage;
         private WritableBitmap _popupImageBitmap;
 
+        private TaskCompletionSource<string> _messageReceiveCompletionSource;
+
         public string StartUrl { get; set; }
         public bool AllowsTransparency { get; set; }
         public Key Keys { get; private set; }
-        
 
-        public AvaloniaCefBrowser()
-        {
-            
-        }
+
+        public CefBrowser Browser => _browser;
 
         protected override void OnTemplateApplied(TemplateAppliedEventArgs e)
         {
-            base.OnTemplateApplied(e);    
+            base.OnTemplateApplied(e);
 
             _browserPageImage = e.NameScope.Find<Image>("PART_Image");
         }
@@ -1169,6 +1170,16 @@ namespace CefGlue.Avalonia
 
                             var settings = new CefBrowserSettings();
                             _cefClient = new WpfCefClient(this);
+
+                            _messageReceiveCompletionSource = new TaskCompletionSource<string>();
+
+                            _cefClient.MessageReceived += (sender, e) =>
+                            {
+                                if (e.Message.Name == "executeJsResult")
+                                {
+                                    _messageReceiveCompletionSource.SetResult(e.Message.Arguments.GetString(0));
+                                }
+                            };
 
                             // This is the first time the window is being rendered, so create it.
                             CefBrowserHost.CreateBrowser(windowInfo, _cefClient, settings, !string.IsNullOrEmpty(StartUrl) ? StartUrl : "about:blank");
@@ -1442,7 +1453,7 @@ namespace CefGlue.Avalonia
                             IsSystemKey = arg.Key == Key.System,
                         };
 
-                        if(arg.Key == Key.Enter)
+                        if (arg.Key == Key.Enter)
                         {
                             keyEvent.EventType = CefKeyEventType.Char;
                         }
@@ -1476,7 +1487,7 @@ namespace CefGlue.Avalonia
                             IsSystemKey = arg.Key == Key.System,
                         };
 
-                         keyEvent.Modifiers = GetKeyboardModifiers(arg.Modifiers);
+                        keyEvent.Modifiers = GetKeyboardModifiers(arg.Modifiers);
 
                         _browserHost.SendKeyEvent(keyEvent);
                     }
@@ -1487,6 +1498,9 @@ namespace CefGlue.Avalonia
                 }
 
                 arg.Handled = true;
+
+                var location = System.Reflection.Assembly.GetEntryAssembly().Location;
+                var directory = System.IO.Path.GetDirectoryName(location);                                
             };
 
             /*browser._popup.MouseMove += (sender, arg) =>
@@ -1574,13 +1588,13 @@ namespace CefGlue.Avalonia
         {
             if (string.IsNullOrEmpty(text))
             {
-               // _tooltipTimer.Stop();
+                // _tooltipTimer.Stop();
                 UpdateTooltip(null);
             }
             else
             {
-             /*   _tooltipTimer.Tick += (sender, args) => UpdateTooltip(text);
-                _tooltipTimer.Start();*/
+                /*   _tooltipTimer.Tick += (sender, args) => UpdateTooltip(text);
+                   _tooltipTimer.Start();*/
             }
 
             return true;
@@ -1590,7 +1604,6 @@ namespace CefGlue.Avalonia
         public event LoadEndEventHandler LoadEnd;
         public event LoadingStateChangeEventHandler LoadingStateChange;
         public event LoadErrorEventHandler LoadError;
-
 
         internal void OnLoadStart(CefFrame frame)
         {
@@ -1609,6 +1622,26 @@ namespace CefGlue.Avalonia
                 this.LoadEnd(this, e);
             }
         }
+
+        private object _scriptLock = new object();
+
+        public async Task<string> ExecuteScriptAsync(string code, string scriptUrl = null)
+        {
+            var message = CefProcessMessage.Create("executeJs");
+            message.Arguments.SetString(0, code);
+            message.Arguments.SetString(1, scriptUrl);
+
+            _messageReceiveCompletionSource = new TaskCompletionSource<string>();
+
+            _browser.SendProcessMessage(CefProcessId.Renderer, message);
+
+            await _messageReceiveCompletionSource.Task;
+
+            var messageReceived = _messageReceiveCompletionSource.Task.Result;
+
+            return messageReceived;
+        }
+
         internal void OnLoadingStateChange(bool isLoading, bool canGoBack, bool canGoForward)
         {
             if (this.LoadingStateChange != null)
@@ -1663,7 +1696,7 @@ namespace CefGlue.Avalonia
                 {
                     _browser = browser;
                     _browserHost = _browser.GetHost();
-                    
+
                     // _browserHost.SetFocus(IsFocused);
 
                     width = (int)_browserWidth;
@@ -1676,7 +1709,7 @@ namespace CefGlue.Avalonia
                 return;
 
             if (width > 0 && height > 0)
-                _browserHost.WasResized();            
+                _browserHost.WasResized();
 
             // 			mainUiDispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
             // 			{
@@ -1707,7 +1740,7 @@ namespace CefGlue.Avalonia
                 rectProvided = true;
             }
             catch (Exception ex)
-            {                
+            {
                 rectProvided = false;
             }
             //}));
@@ -1715,7 +1748,7 @@ namespace CefGlue.Avalonia
             if (rectProvided)
             {
                 rect = browserRect;
-            }            
+            }
 
             return rectProvided;
         }
@@ -1733,7 +1766,7 @@ namespace CefGlue.Avalonia
                 }
                 catch (Exception ex)
                 {
-                    
+
                 }
             }//);
 
@@ -1769,7 +1802,7 @@ namespace CefGlue.Avalonia
 
                 }
                 catch (Exception ex)
-                {                    
+                {
                 }
             }//);
         }
@@ -1784,7 +1817,7 @@ namespace CefGlue.Avalonia
             Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         int stride = width * 4;
-                        int sourceBufferSize = stride * height;                        
+                        int sourceBufferSize = stride * height;
 
                         foreach (CefRectangle dirtyRect in dirtyRects)
                         {
@@ -1799,7 +1832,7 @@ namespace CefGlue.Avalonia
 
                             Rect sourceRect = new Rect(dirtyRect.X, dirtyRect.Y, adjustedWidth, adjustedHeight);
 
-                           // _popupImageBitmap.WritePixels(sourceRect, sourceBuffer, sourceBufferSize, stride, dirtyRect.X, dirtyRect.Y);
+                            // _popupImageBitmap.WritePixels(sourceRect, sourceBuffer, sourceBufferSize, stride, dirtyRect.X, dirtyRect.Y);
                         }
                     });
         }
@@ -1807,7 +1840,7 @@ namespace CefGlue.Avalonia
         private void DoRenderBrowser(WritableBitmap bitmap, int browserWidth, int browserHeight, CefRectangle[] dirtyRects, IntPtr sourceBuffer)
         {
             int stride = browserWidth * 4;
-            int sourceBufferSize = stride * browserHeight;            
+            int sourceBufferSize = stride * browserHeight;
 
             if (browserWidth == 0 || browserHeight == 0)
             {
@@ -1836,7 +1869,7 @@ namespace CefGlue.Avalonia
 
                 // Update the dirty region
                 var sourceRect = new Rect((int)dirtyRect.X, (int)dirtyRect.Y, adjustedWidth, adjustedHeight);
-                                
+
 
                 //bitmap.WritePixels(sourceRect, sourceBuffer, sourceBufferSize, stride, (int)dirtyRect.X, (int)dirtyRect.Y);
 
@@ -1876,9 +1909,11 @@ namespace CefGlue.Avalonia
                 return;
             }
 
-            Dispatcher.UIThread.InvokeAsync(()=>_popup.IsOpen = show);
+            Dispatcher.UIThread.InvokeAsync(() => _popup.IsOpen = show);
         }
 
 
     }
 }
+
+

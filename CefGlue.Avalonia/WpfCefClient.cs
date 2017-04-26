@@ -5,6 +5,13 @@ using Xilium.CefGlue;
 
 namespace CefGlue.Avalonia
 {
+    class MessageReceivedEventArgs : EventArgs
+    {
+        public CefBrowser Browser { get; set; }
+        public CefProcessId ProcessId { get; set; }
+        public CefProcessMessage Message { get; set; }
+    }
+
     class WpfCefClient : CefClient
     {
         private AvaloniaCefBrowser _owner;
@@ -27,6 +34,8 @@ namespace CefGlue.Avalonia
             _loadHandler = new WpfCefLoadHandler(owner);
             _jsDialogHandler = new WpfCefJSDialogHandler();
         }
+
+        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         protected override CefLifeSpanHandler GetLifeSpanHandler()
         {
@@ -51,6 +60,13 @@ namespace CefGlue.Avalonia
         protected override CefJSDialogHandler GetJSDialogHandler()
         {
             return _jsDialogHandler;
+        }
+
+        protected override bool OnProcessMessageReceived(CefBrowser browser, CefProcessId sourceProcess, CefProcessMessage message)
+        {
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs() { Browser = browser, ProcessId = sourceProcess, Message = message });
+
+            return base.OnProcessMessageReceived(browser, sourceProcess, message);
         }
     }
 

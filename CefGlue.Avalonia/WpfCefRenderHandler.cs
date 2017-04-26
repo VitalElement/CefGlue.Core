@@ -84,7 +84,7 @@ namespace CefGlue.Avalonia
 
         protected override void OnImeCompositionRangeChanged(CefBrowser browser, CefRange selectedRange, CefRectangle[] characterBounds)
         {
-        }
+        }        
     }
 
 }
