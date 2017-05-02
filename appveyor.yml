@@ -1,0 +1,18 @@
+version: 0.2.0.{build}
+os: Visual Studio 2017
+
+build_script:
+- ps: .\build.ps1
+
+test: off
+
+artifacts:
+- path: artifacts/nuget/*.nupkg
+
+notifications:
+- provider: Webhook
+  url: https://webhooks.gitter.im/e/e8ce2449e773a183903b
+  method: POST
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true
