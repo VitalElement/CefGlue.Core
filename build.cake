@@ -97,6 +97,55 @@ var netCoreProjects = netCoreApps.Select(name =>
 // NUGET NUSPECS
 ///////////////////////////////////////////////////////////////////////////////
 
+// Key: Package Id
+// Value is Tuple where Item1: Package Version, Item2: The *.csproj/*.props file path.
+var packageVersions = new Dictionary<string, IList<Tuple<string,string>>>();
+
+System.IO.Directory.EnumerateFiles(((DirectoryPath)Directory(".")).FullPath, "*.csproj", SearchOption.AllDirectories)
+    .ToList()
+    .ForEach(fileName => {
+    var xdoc = XDocument.Load(fileName);
+    foreach (var reference in xdoc.Descendants().Where(x => x.Name.LocalName == "PackageReference"))
+    {
+        var name = reference.Attribute("Include").Value;
+        var versionAttribute = reference.Attribute("Version");
+        var packageVersion = versionAttribute != null 
+            ? versionAttribute.Value 
+            : reference.Elements().First(x=>x.Name.LocalName == "Version").Value;
+        IList<Tuple<string, string>> versions;
+        packageVersions.TryGetValue(name, out versions);
+        if (versions == null)
+        {
+            versions = new List<Tuple<string, string>>();
+            packageVersions[name] = versions;
+        }
+        versions.Add(Tuple.Create(packageVersion, fileName));
+    }
+});
+
+Information("Checking installed NuGet package dependencies versions:");
+
+packageVersions.ToList().ForEach(package =>
+{
+    var packageVersion = package.Value.First().Item1;
+    bool isValidVersion = package.Value.All(x => x.Item1 == packageVersion);
+    if (!isValidVersion)
+    {
+        Information("Error: package {0} has multiple versions installed:", package.Key);
+        foreach (var v in package.Value)
+        {
+            Information("{0}, file: {1}", v.Item1, v.Item2);
+        }
+        throw new Exception("Detected multiple NuGet package version installed for different projects.");
+    }
+});
+
+Information("Setting NuGet package dependencies versions:");
+
+var AvaloniaVersion = packageVersions["Avalonia"].FirstOrDefault().Item1;
+
+Information("Package: Avalonia, version: {0}", AvaloniaVersion);
+
 var nuspecNuGetBehaviors = new NuGetPackSettings()
 {
     Id = "VitalElement.CefGlue.Core",
@@ -108,13 +157,9 @@ var nuspecNuGetBehaviors = new NuGetPackSettings()
     RequireLicenseAcceptance = false,
     Symbols = false,
     NoPackageAnalysis = true,
-    Description = "Add docking support to your Avalonia application using this library.",
+    Description = "Port of CEFGlue to NetStandard1.6.",
     Copyright = "Copyright 2017",
-    Tags = new [] { "Avalonia", "CEF", "CEFGlue", "Core", "Dotnet", "Browser", "Control" },
-    /*Dependencies = new []
-    {
-        //new NuSpecDependency { Id = "Avalonia", Version = AvaloniaVersion }
-    },*/
+    Tags = new [] { "Avalonia", "CEF", "CEFGlue", "Core", "Dotnet", "Browser", "Control" },    
     Files = new []
     {
         new NuSpecContent { Source = "CefGlue/bin/" + configuration + "/netstandard1.6/CefGlue.dll", Target = "lib/netstandard1.6" },
@@ -124,6 +169,34 @@ var nuspecNuGetBehaviors = new NuGetPackSettings()
 };
 
 var nuspecNuGetSettings = new List<NuGetPackSettings>();
+
+nuspecNuGetSettings.Add(nuspecNuGetBehaviors);
+
+nuspecNuGetBehaviors = new NuGetPackSettings()
+{
+    Id = "VitalElement.CefGlue.Core.Avalonia",
+    Version = version,
+    Authors = new [] { "VitalElement" },
+    Owners = new [] { "Dan Walmsley (dan at walms.co.uk)" },
+    LicenseUrl = new Uri("http://opensource.org/licenses/MIT"),
+    ProjectUrl = new Uri("https://github.com/VitalElement/CefGlue.Core/"),
+    RequireLicenseAcceptance = false,
+    Symbols = false,
+    NoPackageAnalysis = true,
+    Description = "CEF Glue support for Avalonia",
+    Copyright = "Copyright 2017",
+    Tags = new [] { "Avalonia", "CEF", "CEFGlue", "Core", "Dotnet", "Browser", "Control" },
+    Dependencies = new []
+    {
+        new NuSpecDependency { Id = "Avalonia", Version = AvaloniaVersion }
+    },
+    Files = new []
+    {
+        new NuSpecContent { Source = "CefGlue.Avalonia/bin/" + configuration + "/netstandard1.6/CefGlue.Avalonia.dll", Target = "lib/netstandard1.6" },
+    },
+    BasePath = Directory("./"),
+    OutputDirectory = nugetRoot
+};
 
 nuspecNuGetSettings.Add(nuspecNuGetBehaviors);
 
