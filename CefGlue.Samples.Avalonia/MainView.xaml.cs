@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Xilium.CefGlue;
 
-namespace ControlCatalog
+namespace CefGlue.Samples.Avalonia
 {
     public class MainView : UserControl
     {

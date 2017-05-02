@@ -1,7 +1,7 @@
 using Avalonia;
 using Avalonia.Markup.Xaml;
 
-namespace ControlCatalog
+namespace CefGlue.Samples.Avalonia
 {
     public class App : Application
     {

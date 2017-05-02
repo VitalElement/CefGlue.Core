@@ -10,16 +10,12 @@
 
   <ItemGroup>
     <None Remove="App.xaml" />
-    <None Remove="MainView.xaml" />
     <None Remove="MainWindow.xaml" />
-    <None Remove="SideBar.xaml" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="App.xaml" />
-    <EmbeddedResource Include="MainView.xaml" />
     <EmbeddedResource Include="MainWindow.xaml" />
-    <EmbeddedResource Include="SideBar.xaml" />
   </ItemGroup>
 
   <ItemGroup>
