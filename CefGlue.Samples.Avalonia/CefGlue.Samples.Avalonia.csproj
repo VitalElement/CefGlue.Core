@@ -21,7 +21,7 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.Skia.Desktop" Version="0.4.1-build3057-alpha" />
     <PackageReference Include="Avalonia.Win32" Version="0.4.1-build3057-alpha" />
-    <PackageReference Include="VitalElement.CefGlue.Core.Win-x64" Version="0.9.0-build18-alpha" />
+    <PackageReference Include="VitalElement.CefGlue.Core.Win-x64" Version="0.9.0-build17-alpha" />
   </ItemGroup>
 
   <ItemGroup>
