@@ -75,6 +75,20 @@ var isNuGetRelease = isTagged && isReleasable;
 
 var version = "0.2.0";
 
+if (isRunningOnAppVeyor)
+{
+    if (isTagged)
+    {
+        // Use Tag Name as version
+        version = BuildSystem.AppVeyor.Environment.Repository.Tag.Name;
+    }
+    else
+    {
+        // Use AssemblyVersion with Build as version
+        version += "-build" + EnvironmentVariable("APPVEYOR_BUILD_NUMBER") + "-alpha";
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // DIRECTORIES
 ///////////////////////////////////////////////////////////////////////////////
