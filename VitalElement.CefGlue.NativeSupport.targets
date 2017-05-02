@@ -10,11 +10,11 @@
 
   <!-- add the native OSX library -->
   <Target Condition=" '$(OS)' == 'Unix' " Name="CopyOSX">
-    <Copy SourceFiles="@(MacOSX)" DestinationFolder="@(MacOSX->'$(OutputPath)\\')" />
+    <Copy SourceFiles="@(MacOSX)" DestinationFiles="@(MacOSX->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
   <Target Condition=" '$(OS)' != 'Unix' " Name="CopyWin64">
-    <Copy SourceFiles="@(Win64)" DestinationFolder="@(Win64->'$(OutputPath)\\')" />
+    <Copy SourceFiles="@(Win64)" DestinationFiles="@(Win64->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
 </Project>
