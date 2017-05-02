@@ -69,6 +69,8 @@ var isReleasable = StringComparer.OrdinalIgnoreCase.Equals(ReleasePlatform, plat
 var isMyGetRelease = !isTagged && isReleasable;
 var isNuGetRelease = isTagged && isReleasable;
 
+var editbin = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\bin\HostX86\x86\editbin.exe";
+
 ///////////////////////////////////////////////////////////////////////////////
 // VERSION
 ///////////////////////////////////////////////////////////////////////////////
@@ -448,9 +450,60 @@ Task("Build-NetCore")
     }
 });
 
+Task("Publish-NetCore")
+    .IsDependentOn("Restore-NetCore")
+    .WithCriteria(()=>isMainRepo && isMasterBranch)
+    .Does(() =>
+{
+    foreach (var project in netCoreProjects)
+    {
+        foreach(var runtime in project.Runtimes)
+        {
+            var outputDir = zipRootDir.Combine(project.Name + "-" + runtime);
+
+            Information("Publishing: {0}, runtime: {1}", project.Name, runtime);
+            DotNetCorePublish(project.Path, new DotNetCorePublishSettings {
+                Framework = project.Framework,
+                Configuration = configuration,
+                Runtime = runtime,
+                OutputDirectory = outputDir.FullPath
+            });
+
+            if (IsRunningOnWindows() && (runtime == "win7-x86" || runtime == "win7-x64"))
+            {
+                Information("Patching executable subsystem for: {0}, runtime: {1}", project.Name, runtime);
+                var targetExe = outputDir.CombineWithFilePath(project.Name + ".exe");
+                var exitCodeWithArgument = StartProcess(editbin, new ProcessSettings { 
+                    Arguments = "/subsystem:windows " + targetExe.FullPath
+                });
+                Information("The editbin command exit code: {0}", exitCodeWithArgument);
+            }
+        }
+    }
+});
+
+Task("Zip-NetCore")
+    .IsDependentOn("Publish-NetCore")
+    .WithCriteria(()=>isMainRepo && isMasterBranch)
+    .Does(() =>
+{
+    foreach (var project in netCoreProjects)
+    {
+        foreach(var runtime in project.Runtimes)
+        {
+            var outputDir = zipRootDir.Combine(project.Name + "-" + runtime);
+
+            Zip(outputDir.FullPath, zipRootDir.CombineWithFilePath(project.Name + "-" + runtime + fileZipSuffix), 
+                GetFiles(outputDir.FullPath + "/*.*"));
+        }
+    }    
+});
+
 
 Task("Generate-NuGetPackages")
 .IsDependentOn("Build-NetCore")
+.IsDependentOn("Publish-NetCore")
+.IsDependentOn("Zip-NetCore");
 .IsDependentOn("Download")
 .IsDependentOn("Extract")
 .Does(()=>{

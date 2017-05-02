@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using CefGlue.Avalonia;
 
 namespace ControlCatalog
 {
@@ -82,54 +83,7 @@ namespace ControlCatalog
         static void Main(string[] args)
         {
             AppBuilder.Configure<App>()
-                .UseSkia().UseWin32().AfterSetup((a) =>
-                {
-                    try
-                    {
-                        CefRuntime.Load();
-                    }
-                    catch (DllNotFoundException ex)
-                    {
-
-                    }
-                    catch (CefRuntimeException ex)
-                    {
-
-                    }
-                    catch (Exception ex)
-                    {
-
-                    }
-
-                    var mainArgs = new CefMainArgs(args);
-                    var cefApp = new SampleCefApp();
-
-                    var exitCode = CefRuntime.ExecuteProcess(mainArgs, cefApp);
-                    if (exitCode != -1) { return; }
-
-                    var location = System.Reflection.Assembly.GetEntryAssembly().Location;
-                    var directory = System.IO.Path.GetDirectoryName(location);
-
-                    var cefSettings = new CefSettings
-                    {
-                        BrowserSubprocessPath = Path.Combine(directory, "cefclient.exe"),
-                        SingleProcess = false,
-                        WindowlessRenderingEnabled = true,
-                        MultiThreadedMessageLoop = false,
-                        LogSeverity = CefLogSeverity.Verbose,
-                        LogFile = "cef.log",
-                        ExternalMessagePump = true
-                    };
-
-                    try
-                    {
-                        CefRuntime.Initialize(mainArgs, cefSettings, cefApp);
-                    }
-                    catch (CefRuntimeException ex)
-                    {
-
-                    }
-                }).Start<MainWindow>();
+                .UseSkia().UseWin32().ConfigureCefGlue(args).Start<MainWindow>();
         }
     }
 }
