@@ -8,7 +8,7 @@ namespace CefGlue.Samples.Avalonia
         static void Main(string[] args)
         {
             AppBuilder.Configure<App>()
-                .UseSkia().UseWin32().ConfigureCefGlue(args).Start<MainWindow>();
+                .UsePlatformDetect().UseSkia().ConfigureCefGlue(args).Start<MainWindow>();
         }
     }
 }
