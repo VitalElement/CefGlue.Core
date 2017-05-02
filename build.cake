@@ -25,6 +25,12 @@ using System.IO;
 using Polly;
 using NuGet;
 
+///////////////////////////////////////////////////////////////////////////////
+// SCRIPTS
+///////////////////////////////////////////////////////////////////////////////
+
+#load "./fileDownload.cake"
+
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
@@ -200,9 +206,109 @@ nuspecNuGetBehaviors = new NuGetPackSettings()
 
 nuspecNuGetSettings.Add(nuspecNuGetBehaviors);
 
+nuspecNuGetBehaviors = new NuGetPackSettings()
+{
+    Id = "VitalElement.CefGlue.Core.Win-x64",
+    Version = version,
+    Authors = new [] { "VitalElement" },
+    Owners = new [] { "Dan Walmsley (dan at walms.co.uk)" },
+    LicenseUrl = new Uri("http://opensource.org/licenses/MIT"),
+    ProjectUrl = new Uri("https://github.com/VitalElement/CefGlue.Core/"),
+    RequireLicenseAcceptance = false,
+    Symbols = false,
+    NoPackageAnalysis = true,
+    Description = "CEF Glue support for Avalonia",
+    Copyright = "Copyright 2017",
+    Tags = new [] { "Avalonia", "CEF", "CEFGlue", "Core", "Dotnet", "Browser", "Control" },
+    Files = new []
+    {
+        new NuSpecContent { Source = "**", Target = "runtimes/win7-x64/native" },
+        new NuSpecContent { Source = "VitalElement.CefGlue.NativeSupport.targets", Target = "build/net45/VitalElement.CefGlue.Core.Win-x64.targets" }
+    },
+    BasePath = Directory("./artifacts/win-x64"),
+    OutputDirectory = nugetRoot
+};
+
+nuspecNuGetSettings.Add(nuspecNuGetBehaviors);
+
+nuspecNuGetBehaviors = new NuGetPackSettings()
+{
+    Id = "VitalElement.CefGlue.Core.OSX",
+    Version = version,
+    Authors = new [] { "VitalElement" },
+    Owners = new [] { "Dan Walmsley (dan at walms.co.uk)" },
+    LicenseUrl = new Uri("http://opensource.org/licenses/MIT"),
+    ProjectUrl = new Uri("https://github.com/VitalElement/CefGlue.Core/"),
+    RequireLicenseAcceptance = false,
+    Symbols = false,
+    NoPackageAnalysis = true,
+    Description = "CEF Glue support for Avalonia",
+    Copyright = "Copyright 2017",
+    Tags = new [] { "Avalonia", "CEF", "CEFGlue", "Core", "Dotnet", "Browser", "Control" },
+    Files = new []
+    {
+        new NuSpecContent { Source = "**", Target = "runtimes/osx/native" },
+        new NuSpecContent { Source = "VitalElement.CefGlue.NativeSupport.targets", Target = "build/net45/VitalElement.CefGlue.Core.OSX.targets" }
+    },
+    BasePath = Directory("./artifacts/osx"),
+    OutputDirectory = nugetRoot
+};
+
+nuspecNuGetSettings.Add(nuspecNuGetBehaviors);
+
+
 var nugetPackages = nuspecNuGetSettings.Select(nuspec => {
     return nuspec.OutputDirectory.CombineWithFilePath(string.Concat(nuspec.Id, ".", nuspec.Version, ".nupkg"));
 }).ToArray();
+
+///////////////////////////////////////////////////////////////////////////////
+// 3rd Party Downloads
+///////////////////////////////////////////////////////////////////////////////
+
+var toolchainDownloads = new List<ToolchainDownloadInfo> 
+{ 
+    new ToolchainDownloadInfo (artifactsDir)
+    { 
+        RID = "win-x64", 
+        Downloads = new List<ArchiveDownloadInfo>()
+        { 
+            new ArchiveDownloadInfo()
+            { 
+                Format = "tar.bz2", 
+                DestinationFile = "wincef.tar.bz2", 
+                URL =  "http://opensource.spotify.com/cefbuilds/cef_binary_3.2987.1590.g1f1b268_windows64_client.tar.bz2",
+                Name = "cef_binary_3.2987.1590.g1f1b268_windows64_client",
+                PostExtract = (curDir, info) =>{
+                    Utils.MoveFolderContents(curDir.Combine(info.Name).Combine("Release").ToString(), curDir.ToString());
+                    DeleteDirectory(curDir.Combine(info.Name), true);
+
+                    CopyFile ("./VitalElement.CefGlue.NativeSupport.targets", curDir.CombineWithFilePath("VitalElement.CefGlue.NativeSupport.targets"));              
+                }
+            }
+        }
+    },
+    new ToolchainDownloadInfo (artifactsDir)
+    { 
+        RID = "osx", 
+        Downloads = new List<ArchiveDownloadInfo>()
+        { 
+            new ArchiveDownloadInfo()
+            { 
+                Format = "tar.bz2", 
+                DestinationFile = "osxcef.tar.bz2", 
+                URL =  "http://opensource.spotify.com/cefbuilds/cef_binary_3.2987.1590.g1f1b268_macosx64_client.tar.bz2",
+                Name = "cef_binary_3.2987.1590.g1f1b268_macosx64_client",
+                PostExtract = (curDir, info) =>{
+                    Utils.MoveFolderContents(curDir.Combine(info.Name).Combine("Release/cefclient.app/Contents/Frameworks").ToString(), curDir.ToString());
+                    DeleteDirectory(curDir.Combine(info.Name), true);
+                    DeleteDirectory(curDir.Combine("cefclient Helper.app"), true);      
+
+                    CopyFile ("./VitalElement.CefGlue.NativeSupport.targets", curDir.CombineWithFilePath("VitalElement.CefGlue.NativeSupport.targets"));              
+                }
+            }
+        }
+    },
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // INFORMATION
@@ -245,6 +351,64 @@ Task("Clean")
     CleanDirectories(buildDirs);
     CleanDirectory(artifactsDir);
     CleanDirectory(nugetRoot);
+
+    foreach(var tc in toolchainDownloads)
+    {
+        CleanDirectory(tc.BaseDir);   
+        CleanDirectory(tc.ZipDir);
+    }
+});
+
+Task("Download")
+.Does(()=>{
+    foreach(var tc in toolchainDownloads)
+    {
+        foreach(var downloadInfo in tc.Downloads)
+        {
+            var fileName = tc.ZipDir.CombineWithFilePath(downloadInfo.DestinationFile);
+
+            if(!FileExists(fileName))
+            {
+                DownloadFile(downloadInfo.URL, fileName);
+            }
+        }
+    }
+});
+
+Task("Extract")
+.Does(()=>{
+    foreach(var tc in toolchainDownloads)
+    {
+        foreach(var downloadInfo in tc.Downloads)
+        {
+            var fileName = tc.ZipDir.CombineWithFilePath(downloadInfo.DestinationFile);
+            var dest = tc.BaseDir;
+
+            switch (downloadInfo.Format)
+            {
+                case "tar.bz2":
+                BZip2Uncompress(fileName, dest);
+                break;
+
+                case "zip":
+                ZipUncompress(fileName, dest);
+                break;
+
+                case "none":
+                break;
+
+                default:
+                case "tar.xz":
+                StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", fileName, dest) });
+                break;
+            }        
+
+            if(downloadInfo.PostExtract != null)
+            {
+                downloadInfo.PostExtract(dest, downloadInfo);
+            }
+        }
+    }
 });
 
 Task("Restore-NetCore")
@@ -273,6 +437,8 @@ Task("Build-NetCore")
 
 Task("Generate-NuGetPackages")
 .IsDependentOn("Build-NetCore")
+.IsDependentOn("Download")
+.IsDependentOn("Extract")
 .Does(()=>{
     foreach(var nuspec in nuspecNuGetSettings)
     {
