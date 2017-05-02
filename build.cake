@@ -503,7 +503,7 @@ Task("Zip-NetCore")
 Task("Generate-NuGetPackages")
 .IsDependentOn("Build-NetCore")
 .IsDependentOn("Publish-NetCore")
-.IsDependentOn("Zip-NetCore");
+.IsDependentOn("Zip-NetCore")
 .IsDependentOn("Download")
 .IsDependentOn("Extract")
 .Does(()=>{
