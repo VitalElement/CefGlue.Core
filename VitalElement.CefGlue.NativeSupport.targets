@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">    
-     <ItemGroup>
-        <MacOSX Include="$(MSBuildThisFileDirectory)..\..\runtimes\osx\native\Chromium Embdedded Framework.framework\**\*.*" />
-     </ItemGroup>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <MacOSX Include="$(MSBuildThisFileDirectory)..\..\runtimes\osx\native\Chromium Embdedded Framework.framework\**\*.*" />
+  </ItemGroup>
 
-     <ItemGroup>
-        <Win64 Include="$(MSBuildThisFileDirectory)..\..\runtimes\win7-x64\native\**\*.*" />
-     </ItemGroup>
+  <ItemGroup>
+    <Win64 Include="$(MSBuildThisFileDirectory)..\..\runtimes\win7-x64\native\**\*.*" />
+  </ItemGroup>
 
-    <!-- add the native OSX library -->
-    <ItemGroup Condition=" '$(OS)' == 'Unix' ">  
-        <Copy SourceFiles="@(MacOSX)" DestinationFolder="@(MacOSX->'$(OutputPath)\\')" />        
-    </ItemGroup>
+  <!-- add the native OSX library -->
+  <Target Condition=" '$(OS)' == 'Unix' " Name="CopyOSX">
+    <Copy SourceFiles="@(MacOSX)" DestinationFolder="@(MacOSX->'$(OutputPath)\\')" />
+  </Target>
 
-    <ItemGroup Condition=" '$(OS)' != 'Unix' ">  
-        <Copy SourceFiles="@(Win64)" DestinationFolder="@(Win64->'$(OutputPath)\\')" />        
-    </ItemGroup>
+  <Target Condition=" '$(OS)' != 'Unix' " Name="CopyWin64">
+    <Copy SourceFiles="@(Win64)" DestinationFolder="@(Win64->'$(OutputPath)\\')" />
+  </Target>
+
 </Project>
