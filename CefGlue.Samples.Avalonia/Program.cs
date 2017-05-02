@@ -40,7 +40,7 @@ namespace ControlCatalog
                 _current = Observable.Interval(TimeSpan.FromMilliseconds(delayMs)).ObserveOn(AvaloniaScheduler.Instance).Subscribe((i) =>
                {
                    CefRuntime.DoMessageLoopWork();
-                   
+
                });
             }
         }
@@ -82,7 +82,7 @@ namespace ControlCatalog
         static void Main(string[] args)
         {
             AppBuilder.Configure<App>()
-                .UseSkia().UseWin32().AfterSetup((a)=> 
+                .UseSkia().UseWin32().AfterSetup((a) =>
                 {
                     try
                     {
@@ -129,7 +129,7 @@ namespace ControlCatalog
                     {
 
                     }
-                }).Start<MainWindow>();            
+                }).Start<MainWindow>();
         }
     }
 }
