@@ -75,7 +75,7 @@ var editbin = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC
 // VERSION
 ///////////////////////////////////////////////////////////////////////////////
 
-var version = "0.2.0";
+var version = "0.9.0";
 
 if (isRunningOnAppVeyor)
 {
