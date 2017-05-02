@@ -37,7 +37,7 @@ var configuration = Argument("configuration", "Release");
 // CONFIGURATION
 ///////////////////////////////////////////////////////////////////////////////
 
-var MainRepo = "VitalElement/AvalonStudio.Toolchains.ClangToolchain";
+var MainRepo = "VitalElement/CefGlue.Core";
 var MasterBranch = "master";
 var ReleasePlatform = "Any CPU";
 var ReleaseConfiguration = "Release";
@@ -109,7 +109,7 @@ var nuspecNuGetBehaviors = new NuGetPackSettings()
     Symbols = false,
     NoPackageAnalysis = true,
     Description = "Add docking support to your Avalonia application using this library.",
-    Copyright = "Copyright 2016",
+    Copyright = "Copyright 2017",
     Tags = new [] { "Avalonia", "CEF", "CEFGlue", "Core", "Dotnet", "Browser", "Control" },
     /*Dependencies = new []
     {
