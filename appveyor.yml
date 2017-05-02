@@ -8,6 +8,7 @@ test: off
 
 artifacts:
 - path: artifacts/nuget/*.nupkg
+- path: artifacts/zip/*.zip
 
 notifications:
 - provider: Webhook
