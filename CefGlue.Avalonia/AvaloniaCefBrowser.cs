@@ -1798,6 +1798,8 @@ namespace CefGlue.Avalonia
                     if (_browserPageBitmap != null)
                     {
                         DoRenderBrowser(_browserPageBitmap, width, height, dirtyRects, buffer);
+
+                        _browserPageImage.InvalidateVisual();
                     }
 
                 }
@@ -1895,8 +1897,6 @@ namespace CefGlue.Avalonia
                 Marshal.Copy(sourceBuffer, managedArray, 0, sourceBufferSize);
 
                 Marshal.Copy(managedArray, 0, l.Address, sourceBufferSize);
-
-                InvalidateVisual();
             }
         }
 
