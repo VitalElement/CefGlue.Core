@@ -469,7 +469,7 @@ Task("Publish-NetCore")
                 OutputDirectory = outputDir.FullPath
             });
 
-            if (IsRunningOnWindows() && (runtime == "win7-x86" || runtime == "win7-x64"))
+            /*if (IsRunningOnWindows() && (runtime == "win7-x86" || runtime == "win7-x64"))
             {
                 Information("Patching executable subsystem for: {0}, runtime: {1}", project.Name, runtime);
                 var targetExe = outputDir.CombineWithFilePath(project.Name + ".exe");
@@ -477,7 +477,7 @@ Task("Publish-NetCore")
                     Arguments = "/subsystem:windows " + targetExe.FullPath
                 });
                 Information("The editbin command exit code: {0}", exitCodeWithArgument);
-            }
+            }*/
         }
     }
 });
