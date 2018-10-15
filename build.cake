@@ -3,7 +3,6 @@
 /////////////////////////////////////////////////////////////////////
 
 #addin "nuget:?package=Polly&version=5.0.6"
-#addin "nuget:?package=NuGet.Core&version=2.14.0"
 #addin "nuget:?package=SharpZipLib&version=0.86.0"
 #addin "nuget:?package=Cake.Compression&version=0.2.1"
 
@@ -11,7 +10,7 @@
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 
-#tool "nuget:https://dotnet.myget.org/F/nuget-build/?package=NuGet.CommandLine&version=4.3.0-beta1-2361&prerelease"
+#tool "nuget:?package=NuGet.CommandLine&version=4.3.0"
 
 ///////////////////////////////////////////////////////////////////////////////
 // USINGS
