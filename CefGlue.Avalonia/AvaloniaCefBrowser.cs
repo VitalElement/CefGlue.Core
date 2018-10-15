@@ -1104,7 +1104,7 @@ namespace CefGlue.Avalonia
 
         private Image _browserPageImage;
 
-        private WritableBitmap _browserPageBitmap;
+        private WriteableBitmap _browserPageBitmap;
 
         private int _browserWidth;
         private int _browserHeight;
@@ -1119,7 +1119,7 @@ namespace CefGlue.Avalonia
 
         private Popup _popup;
         private Image _popupImage;
-        private WritableBitmap _popupImageBitmap;
+        private WriteableBitmap _popupImageBitmap;
 
         private TaskCompletionSource<string> _messageReceiveCompletionSource;
 
@@ -1789,7 +1789,7 @@ namespace CefGlue.Avalonia
                 {
                     if (_browserSizeChanged)
                     {
-                        _browserPageBitmap = new WritableBitmap((int)_browserWidth, (int)_browserHeight, PixelFormat.Bgra8888);//new WriteableBitmap((int)_browserWidth, (int)_browserHeight, 96, 96, AllowsTransparency ? PixelFormats.Bgra32 : PixelFormats.Bgr32, null);
+                        _browserPageBitmap = new WriteableBitmap((int)_browserWidth, (int)_browserHeight, PixelFormat.Bgra8888);//new WriteableBitmap((int)_browserWidth, (int)_browserHeight, 96, 96, AllowsTransparency ? PixelFormats.Bgra32 : PixelFormats.Bgr32, null);
                         _browserPageImage.Source = _browserPageBitmap;
 
                         _browserSizeChanged = false;
@@ -1839,7 +1839,7 @@ namespace CefGlue.Avalonia
                     });
         }
 
-        private void DoRenderBrowser(WritableBitmap bitmap, int browserWidth, int browserHeight, CefRectangle[] dirtyRects, IntPtr sourceBuffer)
+        private void DoRenderBrowser(WriteableBitmap bitmap, int browserWidth, int browserHeight, CefRectangle[] dirtyRects, IntPtr sourceBuffer)
         {
             int stride = browserWidth * 4;
             int sourceBufferSize = stride * browserHeight;
