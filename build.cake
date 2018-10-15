@@ -5,7 +5,7 @@
 #addin "nuget:?package=Polly&version=5.0.6"
 #addin "nuget:?package=NuGet.Core&version=2.12.0"
 #addin "nuget:?package=SharpZipLib&version=0.86.0"
-#addin "nuget:?package=Cake.Compression&version=0.1.4"
+#addin "nuget:?package=Cake.Compression&version=0.2.1"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
