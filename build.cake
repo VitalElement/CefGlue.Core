@@ -214,7 +214,7 @@ nuspecNuGetBehaviors = new NuGetPackSettings()
     },
     Files = new []
     {
-        new NuSpecContent { Source = "CefGlue.Avalonia/bin/" + configuration + "/netstandard1.6/CefGlue.Avalonia.dll", Target = "lib/netstandard1.6" },
+        new NuSpecContent { Source = "CefGlue.Avalonia/bin/" + configuration + "/netstandard2.0/CefGlue.Avalonia.dll", Target = "lib/netstandard2.0" },
     },
     BasePath = Directory("./"),
     OutputDirectory = nugetRoot
