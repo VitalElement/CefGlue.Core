@@ -69,7 +69,7 @@ var isReleasable = StringComparer.OrdinalIgnoreCase.Equals(ReleasePlatform, plat
 var isMyGetRelease = !isTagged && isReleasable;
 var isNuGetRelease = isTagged && isReleasable;
 
-var editbin = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\bin\HostX86\x86\editbin.exe";
+var editbin = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.14.26428\bin\HostX86\x86\editbin.exe";
 
 ///////////////////////////////////////////////////////////////////////////////
 // VERSION
