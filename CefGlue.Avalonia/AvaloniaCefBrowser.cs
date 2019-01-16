@@ -1190,7 +1190,7 @@ namespace CefGlue.Avalonia
                     else
                     {
                         // Only update the bitmap if the size has changed
-                        if (_browserPageBitmap == null || (_browserPageBitmap.PixelWidth != newWidth || _browserPageBitmap.PixelHeight != newHeight))
+                        if (_browserPageBitmap == null || (_browserPageBitmap.PixelSize.Width != newWidth || _browserPageBitmap.PixelSize.Height != newHeight))
                         {
                             _browserWidth = newWidth;
                             _browserHeight = newHeight;
@@ -1789,7 +1789,7 @@ namespace CefGlue.Avalonia
                 {
                     if (_browserSizeChanged)
                     {
-                        _browserPageBitmap = new WriteableBitmap((int)_browserWidth, (int)_browserHeight, PixelFormat.Bgra8888);//new WriteableBitmap((int)_browserWidth, (int)_browserHeight, 96, 96, AllowsTransparency ? PixelFormats.Bgra32 : PixelFormats.Bgr32, null);
+                        _browserPageBitmap = new WriteableBitmap(new PixelSize((int)_browserWidth, (int)_browserHeight), new Vector(96, 96), PixelFormat.Bgra8888);//new WriteableBitmap((int)_browserWidth, (int)_browserHeight, 96, 96, AllowsTransparency ? PixelFormats.Bgra32 : PixelFormats.Bgr32, null);
                         _browserPageImage.Source = _browserPageBitmap;
 
                         _browserSizeChanged = false;
