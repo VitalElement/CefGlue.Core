@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CefGlue\CefGlue.csproj" />
+    <ProjectReference Include="..\..\Xamarin.Forms.Platform.AvaloniaUI\CefGlue\CefGlue\CefGlue.csproj" />
   </ItemGroup>
 
 </Project>

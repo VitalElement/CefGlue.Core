@@ -7,7 +7,7 @@ namespace CefGlue.Avalonia
 {
     internal sealed class WpfCefRenderHandler : CefRenderHandler
     {
-        private readonly AvaloniaCefBrowser _owner;        
+        private readonly AvaloniaCefBrowser _owner;
         private readonly IUiHelper _uiHelper;
 
         public WpfCefRenderHandler(AvaloniaCefBrowser owner, IUiHelper uiHelper)
@@ -22,7 +22,7 @@ namespace CefGlue.Avalonia
                 throw new ArgumentNullException("uiHelper");
             }
 
-            _owner = owner;            
+            _owner = owner;
             _uiHelper = uiHelper;
         }
 
@@ -54,11 +54,11 @@ namespace CefGlue.Avalonia
 
         protected override void OnPopupSize(CefBrowser browser, CefRectangle rect)
         {
-           // _owner.OnPopupSize(rect);
+            // _owner.OnPopupSize(rect);
         }
 
         protected override void OnPaint(CefBrowser browser, CefPaintElementType type, CefRectangle[] dirtyRects, IntPtr buffer, int width, int height)
-        {               
+        {
             if (type == CefPaintElementType.View)
             {
                 _owner.HandleViewPaint(browser, type, dirtyRects, buffer, width, height);
@@ -84,7 +84,12 @@ namespace CefGlue.Avalonia
 
         protected override void OnImeCompositionRangeChanged(CefBrowser browser, CefRange selectedRange, CefRectangle[] characterBounds)
         {
-        }        
+        }
+
+        protected override CefAccessibilityHandler GetAccessibilityHandler()
+        {
+            return new AvaloniaCefAccessibilityHandler();
+        }
     }
 
 }

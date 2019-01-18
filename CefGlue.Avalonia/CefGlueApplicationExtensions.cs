@@ -30,7 +30,7 @@ namespace CefGlue.Avalonia
                 var mainArgs = new CefMainArgs(args);
                 var cefApp = new SampleCefApp();
 
-                var exitCode = CefRuntime.ExecuteProcess(mainArgs, cefApp);
+                var exitCode = CefRuntime.ExecuteProcess(mainArgs, cefApp, IntPtr.Zero);
                 if (exitCode != -1) { return; }
 
                 var location = System.Reflection.Assembly.GetEntryAssembly().Location;
@@ -38,7 +38,6 @@ namespace CefGlue.Avalonia
 
                 var cefSettings = new CefSettings
                 {
-                    SingleProcess = true,
                     WindowlessRenderingEnabled = true,
                     MultiThreadedMessageLoop = false,
                     LogSeverity = CefLogSeverity.Disable,
@@ -48,7 +47,7 @@ namespace CefGlue.Avalonia
 
                 try
                 {
-                    CefRuntime.Initialize(mainArgs, cefSettings, cefApp);
+                    CefRuntime.Initialize(mainArgs, cefSettings, cefApp, IntPtr.Zero);
                 }
                 catch (CefRuntimeException ex)
                 {
