@@ -85,7 +85,7 @@ namespace CefGlue.Avalonia
 
         protected override CefAccessibilityHandler GetAccessibilityHandler()
         {
-            return null;
+            return new AvaloniaCefAccessibilityHandler();
         }
 
         protected override void OnAcceleratedPaint(CefBrowser browser, CefPaintElementType type, CefRectangle[] dirtyRects, IntPtr sharedHandle)
