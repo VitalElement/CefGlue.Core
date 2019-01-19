@@ -1500,7 +1500,7 @@ namespace CefGlue.Avalonia
                 arg.Handled = true;
 
                 var location = System.Reflection.Assembly.GetEntryAssembly().Location;
-                var directory = System.IO.Path.GetDirectoryName(location);                                
+                var directory = System.IO.Path.GetDirectoryName(location);
             };
 
             /*browser._popup.MouseMove += (sender, arg) =>
@@ -1604,6 +1604,7 @@ namespace CefGlue.Avalonia
         public event LoadEndEventHandler LoadEnd;
         public event LoadingStateChangeEventHandler LoadingStateChange;
         public event LoadErrorEventHandler LoadError;
+        public event BrowserCreatedHandler BrowserCreated;
 
         internal void OnLoadStart(CefFrame frame)
         {
@@ -1719,6 +1720,8 @@ namespace CefGlue.Avalonia
             // 					this.initialUrl = string.Empty;
             // 				}
             // 			}));
+
+            this.BrowserCreated?.Invoke(this, new BrowserCreatedEventArgs(browser));
         }
 
         internal bool GetViewRect(ref CefRectangle rect)

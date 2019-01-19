@@ -5,14 +5,14 @@ using Xilium.CefGlue;
 
 namespace CefGlue.Avalonia
 {
-    class MessageReceivedEventArgs : EventArgs
+    public class MessageReceivedEventArgs : EventArgs
     {
         public CefBrowser Browser { get; set; }
         public CefProcessId ProcessId { get; set; }
         public CefProcessMessage Message { get; set; }
     }
 
-    class WpfCefClient : CefClient
+    public class WpfCefClient : CefClient
     {
         private AvaloniaCefBrowser _owner;
 
