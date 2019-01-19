@@ -22,14 +22,14 @@
         #region Platform Detection
         private static CefRuntimePlatform DetectPlatform()
         {
-            /*var platformId = Environment.OSVersion.Platform;
+            var platformId = Environment.OSVersion.Platform;
 
             if (platformId == PlatformID.MacOSX)
                 return CefRuntimePlatform.MacOSX;
 
             int p = (int)platformId;
             if ((p == 4) || (p == 128))
-                return IsRunningOnMac() ? CefRuntimePlatform.MacOSX : CefRuntimePlatform.Linux;*/
+                return IsRunningOnMac() ? CefRuntimePlatform.MacOSX : CefRuntimePlatform.Linux;
 
             return CefRuntimePlatform.Windows;
         }
@@ -133,9 +133,9 @@
             try
             {
                 var n_actual = libcef.api_hash(0);
-                actual = n_actual != null ? new string((char*)n_actual) : null;
+                actual = n_actual != null ? new string(n_actual) : null;
             }
-            catch (Exception ex)
+            catch (EntryPointNotFoundException ex)
             {
                 throw new NotSupportedException("cef_api_hash call is not supported.", ex);
             }
@@ -150,11 +150,11 @@
                 default: throw new PlatformNotSupportedException();
             }
 
-           /* if (string.Compare(actual, expected, StringComparison.OrdinalIgnoreCase) != 0)
+            if (string.Compare(actual, expected, StringComparison.OrdinalIgnoreCase) != 0)
             {
                 var expectedVersion = libcef.CEF_VERSION;
                 throw ExceptionBuilder.RuntimeVersionApiHashMismatch(actual, expected, expectedVersion);
-            }*/
+            }
         }
 
         #endregion
@@ -356,22 +356,6 @@
 
             return libcef.post_delayed_task(threadId, task.ToNative(), delay) != 0;
         }
-        #endregion
-
-        #region cef_geolocation
-
-        /// <summary>
-        /// Request a one-time geolocation update. This function bypasses any user
-        /// permission checks so should only be used by code that is allowed to access
-        /// location information.
-        /// </summary>
-        public static bool GetGeolocation(CefGetGeolocationCallback callback)
-        {
-            if (callback == null) throw new ArgumentNullException("callback");
-
-            return libcef.get_geolocation(callback.ToNative()) != 0;
-        }
-
         #endregion
 
         #region cef_origin_whitelist
@@ -947,9 +931,6 @@
         ///   2. widevinecdm file from the CDM binary distribution (e.g.
         ///      widevinecdm.dll on on Windows, libwidevinecdm.dylib on OS X,
         ///      libwidevinecdm.so on Linux).
-        ///   3. widevidecdmadapter file from the CEF binary distribution (e.g.
-        ///      widevinecdmadapter.dll on Windows, widevinecdmadapter.plugin on OS X,
-        ///      libwidevinecdmadapter.so on Linux).
         ///
         /// If any of these files are missing or if the manifest file has incorrect
         /// contents the registration will fail and |callback| will receive a |result|
@@ -1142,14 +1123,17 @@
         ///
         /// CrashKeys section:
         ///
-        /// Any number of crash keys can be specified for use by the application. Crash
-        /// key values will be truncated based on the specified size (small = 63 bytes,
-        /// medium = 252 bytes, large = 1008 bytes). The value of crash keys can be set
-        /// from any thread or process using the CefSetCrashKeyValue function. These
-        /// key/value pairs will be sent to the crash server along with the crash dump
-        /// file. Medium and large values will be chunked for submission. For example,
-        /// if your key is named "mykey" then the value will be broken into ordered
-        /// chunks and submitted using keys named "mykey-1", "mykey-2", etc.
+        /// A maximum of 26 crash keys of each size can be specified for use by the
+        /// application. Crash key values will be truncated based on the specified size
+        /// (small = 64 bytes, medium = 256 bytes, large = 1024 bytes). The value of
+        /// crash keys can be set from any thread or process using the
+        /// CefSetCrashKeyValue function. These key/value pairs will be sent to the crash
+        /// server along with the crash dump file.+// A maximum of 26 crash keys of each size can be specified for use by the
+        /// application. Crash key values will be truncated based on the specified size
+        /// (small = 64 bytes, medium = 256 bytes, large = 1024 bytes). The value of
+        /// crash keys can be set from any thread or process using the
+        /// CefSetCrashKeyValue function. These key/value pairs will be sent to the crash
+        /// server along with the crash dump file.
         /// </summary>
         public static bool CrashReportingEnabled()
         {
@@ -1167,6 +1151,29 @@
                 var n_key = new cef_string_t(key_ptr, key.Length);
                 var n_value = new cef_string_t(value_ptr, value != null ? value.Length : 0);
                 libcef.set_crash_key_value(&n_key, &n_value);
+            }
+        }
+
+        #endregion
+
+        #region file_util
+
+        /// <summary>
+        /// Loads the existing "Certificate Revocation Lists" file that is managed by
+        /// Google Chrome. This file can generally be found in Chrome's User Data
+        /// directory (e.g. "C:\Users\[User]\AppData\Local\Google\Chrome\User Data\" on
+        /// Windows) and is updated periodically by Chrome's component updater service.
+        /// Must be called in the browser process after the context has been initialized.
+        /// See https://dev.chromium.org/Home/chromium-security/crlsets for background.
+        /// </summary>
+        public static void LoadCrlSetsFile(string path)
+        {
+            if (path == null) throw new ArgumentNullException(nameof(path));
+
+            fixed (char* path_ptr = path)
+            {
+                var n_path = new cef_string_t(path_ptr, path.Length);
+                libcef.load_crlsets_file(&n_path);
             }
         }
 

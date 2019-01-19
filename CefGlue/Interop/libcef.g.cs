@@ -77,9 +77,9 @@ namespace Xilium.CefGlue.Interop
         [DllImport(libcef.DllName, EntryPoint = "cef_zip_directory", CallingConvention = libcef.CEF_CALL)]
         public static extern int zip_directory(cef_string_t* src_dir, cef_string_t* dest_file, int include_hidden_files);
         
-        // CefGetGeolocation
-        [DllImport(libcef.DllName, EntryPoint = "cef_get_geolocation", CallingConvention = libcef.CEF_CALL)]
-        public static extern int get_geolocation(cef_get_geolocation_callback_t* callback);
+        // CefLoadCRLSetsFile
+        [DllImport(libcef.DllName, EntryPoint = "cef_load_crlsets_file", CallingConvention = libcef.CEF_CALL)]
+        public static extern void load_crlsets_file(cef_string_t* path);
         
         // CefAddCrossOriginWhitelistEntry
         [DllImport(libcef.DllName, EntryPoint = "cef_add_cross_origin_whitelist_entry", CallingConvention = libcef.CEF_CALL)]

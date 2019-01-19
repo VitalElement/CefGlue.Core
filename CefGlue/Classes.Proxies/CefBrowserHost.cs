@@ -344,12 +344,15 @@
         }
 
         /// <summary>
-        /// Search for |searchText|. |identifier| can be used to have multiple searches
-        /// running simultaniously. |forward| indicates whether to search forward or
-        /// backward within the page. |matchCase| indicates whether the search should
-        /// be case-sensitive. |findNext| indicates whether this is the first request
-        /// or a follow-up. The CefFindHandler instance, if any, returned via
-        /// CefClient::GetFindHandler will be called to report find results.
+        /// Search for |searchText|. |identifier| must be a unique ID and these IDs
+        /// must strictly increase so that newer requests always have greater IDs than
+        /// older requests. If |identifier| is zero or less than the previous ID value
+        /// then it will be automatically assigned a new valid ID. |forward| indicates
+        /// whether to search forward or backward within the page. |matchCase|
+        /// indicates whether the search should be case-sensitive. |findNext| indicates
+        /// whether this is the first request or a follow-up. The CefFindHandler
+        /// instance, if any, returned via CefClient::GetFindHandler will be called to
+        /// report find results.
         /// </summary>
         public void Find(int identifier, string searchText, bool forward, bool matchCase, bool findNext)
         {
@@ -512,6 +515,15 @@
         public void Invalidate(CefPaintElementType type)
         {
             cef_browser_host_t.invalidate(_self, type);
+        }
+
+        /// <summary>
+        /// Issue a BeginFrame request to Chromium.  Only valid when
+        /// CefWindowInfo::external_begin_frame_enabled is set to true.
+        /// </summary>
+        public void SendExternalBeginFrame()
+        {
+            cef_browser_host_t.send_external_begin_frame(_self);
         }
 
         /// <summary>
@@ -778,6 +790,70 @@
             return CefNavigationEntry.FromNativeOrNull(
                 cef_browser_host_t.get_visible_navigation_entry(_self)
                 );
+        }
+
+        /// <summary>
+        /// Set accessibility state for all frames. |accessibility_state| may be
+        /// default, enabled or disabled. If |accessibility_state| is STATE_DEFAULT
+        /// then accessibility will be disabled by default and the state may be further
+        /// controlled with the "force-renderer-accessibility" and
+        /// "disable-renderer-accessibility" command-line switches. If
+        /// |accessibility_state| is STATE_ENABLED then accessibility will be enabled.
+        /// If |accessibility_state| is STATE_DISABLED then accessibility will be
+        /// completely disabled.
+        /// For windowed browsers accessibility will be enabled in Complete mode (which
+        /// corresponds to kAccessibilityModeComplete in Chromium). In this mode all
+        /// platform accessibility objects will be created and managed by Chromium's
+        /// internal implementation. The client needs only to detect the screen reader
+        /// and call this method appropriately. For example, on macOS the client can
+        /// handle the @"AXEnhancedUserInterface" accessibility attribute to detect
+        /// VoiceOver state changes and on Windows the client can handle WM_GETOBJECT
+        /// with OBJID_CLIENT to detect accessibility readers.
+        /// For windowless browsers accessibility will be enabled in TreeOnly mode
+        /// (which corresponds to kAccessibilityModeWebContentsOnly in Chromium). In
+        /// this mode renderer accessibility is enabled, the full tree is computed, and
+        /// events are passed to CefAccessibiltyHandler, but platform accessibility
+        /// objects are not created. The client may implement platform accessibility
+        /// objects using CefAccessibiltyHandler callbacks if desired.
+        /// </summary>
+        public void SetAccessibilityState(CefState accessibilityState)
+        {
+            cef_browser_host_t.set_accessibility_state(_self, accessibilityState);
+        }
+
+        /// <summary>
+        /// Enable notifications of auto resize via CefDisplayHandler::OnAutoResize.
+        /// Notifications are disabled by default. |min_size| and |max_size| define the
+        /// range of allowed sizes.
+        /// </summary>
+        public void SetAutoResizeEnabled(bool enabled, CefSize minSize, CefSize maxSize)
+        {
+            var nMinSize = new cef_size_t(minSize.Width, minSize.Height);
+            var nMaxSize = new cef_size_t(maxSize.Width, maxSize.Height);
+            cef_browser_host_t.set_auto_resize_enabled(_self, enabled ? 1 : 0, &nMinSize, &nMaxSize);
+        }
+
+        /// <summary>
+        /// Returns the extension hosted in this browser or NULL if no extension is
+        /// hosted. See CefRequestContext::LoadExtension for details.
+        /// </summary>
+        public CefExtension GetExtension()
+        {
+            var nExtension = cef_browser_host_t.get_extension(_self);
+            return CefExtension.FromNativeOrNull(nExtension);
+        }
+
+        /// <summary>
+        /// Returns true if this browser is hosting an extension background script.
+        /// Background hosts do not have a window and are not displayable. See
+        /// CefRequestContext::LoadExtension for details.
+        /// </summary>
+        public bool IsBackgroundHost
+        {
+            get
+            {
+                return cef_browser_host_t.is_background_host(_self) != 0;
+            }
         }
     }
 }

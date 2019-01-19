@@ -20,6 +20,8 @@ namespace Xilium.CefGlue.Interop
         internal IntPtr _on_tooltip;
         internal IntPtr _on_status_message;
         internal IntPtr _on_console_message;
+        internal IntPtr _on_auto_resize;
+        internal IntPtr _on_loading_progress_change;
         
         [UnmanagedFunctionPointer(libcef.CEF_CALLBACK)]
         #if !DEBUG
@@ -38,6 +40,12 @@ namespace Xilium.CefGlue.Interop
         [SuppressUnmanagedCodeSecurity]
         #endif
         internal delegate int has_one_ref_delegate(cef_display_handler_t* self);
+        
+        [UnmanagedFunctionPointer(libcef.CEF_CALLBACK)]
+        #if !DEBUG
+        [SuppressUnmanagedCodeSecurity]
+        #endif
+        internal delegate int has_at_least_one_ref_delegate(cef_display_handler_t* self);
         
         [UnmanagedFunctionPointer(libcef.CEF_CALLBACK)]
         #if !DEBUG
@@ -79,7 +87,19 @@ namespace Xilium.CefGlue.Interop
         #if !DEBUG
         [SuppressUnmanagedCodeSecurity]
         #endif
-        internal delegate int on_console_message_delegate(cef_display_handler_t* self, cef_browser_t* browser, cef_string_t* message, cef_string_t* source, int line);
+        internal delegate int on_console_message_delegate(cef_display_handler_t* self, cef_browser_t* browser, CefLogSeverity level, cef_string_t* message, cef_string_t* source, int line);
+        
+        [UnmanagedFunctionPointer(libcef.CEF_CALLBACK)]
+        #if !DEBUG
+        [SuppressUnmanagedCodeSecurity]
+        #endif
+        internal delegate int on_auto_resize_delegate(cef_display_handler_t* self, cef_browser_t* browser, cef_size_t* new_size);
+        
+        [UnmanagedFunctionPointer(libcef.CEF_CALLBACK)]
+        #if !DEBUG
+        [SuppressUnmanagedCodeSecurity]
+        #endif
+        internal delegate void on_loading_progress_change_delegate(cef_display_handler_t* self, cef_browser_t* browser, double progress);
         
         private static int _sizeof;
         

@@ -7,7 +7,7 @@ namespace CefGlue.Avalonia
 {
     internal sealed class WpfCefRenderHandler : CefRenderHandler
     {
-        private readonly AvaloniaCefBrowser _owner;
+        private readonly AvaloniaCefBrowser _owner;        
         private readonly IUiHelper _uiHelper;
 
         public WpfCefRenderHandler(AvaloniaCefBrowser owner, IUiHelper uiHelper)
@@ -22,18 +22,15 @@ namespace CefGlue.Avalonia
                 throw new ArgumentNullException("uiHelper");
             }
 
-            _owner = owner;
+            _owner = owner;            
             _uiHelper = uiHelper;
         }
 
-        protected override bool GetRootScreenRect(CefBrowser browser, ref CefRectangle rect)
-        {
-            return _owner.GetViewRect(ref rect);
-        }
 
-        protected override bool GetViewRect(CefBrowser browser, ref CefRectangle rect)
+        protected override void GetViewRect(CefBrowser browser, out CefRectangle rect)
         {
-            return _owner.GetViewRect(ref rect);
+            rect = new CefRectangle();
+            _owner.GetViewRect(ref rect);
         }
 
         protected override bool GetScreenPoint(CefBrowser browser, int viewX, int viewY, ref int screenX, ref int screenY)
@@ -54,11 +51,11 @@ namespace CefGlue.Avalonia
 
         protected override void OnPopupSize(CefBrowser browser, CefRectangle rect)
         {
-            // _owner.OnPopupSize(rect);
+           // _owner.OnPopupSize(rect);
         }
 
         protected override void OnPaint(CefBrowser browser, CefPaintElementType type, CefRectangle[] dirtyRects, IntPtr buffer, int width, int height)
-        {
+        {               
             if (type == CefPaintElementType.View)
             {
                 _owner.HandleViewPaint(browser, type, dirtyRects, buffer, width, height);
@@ -88,7 +85,11 @@ namespace CefGlue.Avalonia
 
         protected override CefAccessibilityHandler GetAccessibilityHandler()
         {
-            return new AvaloniaCefAccessibilityHandler();
+            return null;
+        }
+
+        protected override void OnAcceleratedPaint(CefBrowser browser, CefPaintElementType type, CefRectangle[] dirtyRects, IntPtr sharedHandle)
+        {
         }
     }
 

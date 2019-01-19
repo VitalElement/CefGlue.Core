@@ -12,16 +12,17 @@
     /// </summary>
     public abstract unsafe partial class CefRequestHandler
     {
-        private int on_before_browse(cef_request_handler_t* self, cef_browser_t* browser, cef_frame_t* frame, cef_request_t* request, int is_redirect)
+        private int on_before_browse(cef_request_handler_t* self, cef_browser_t* browser, cef_frame_t* frame, cef_request_t* request, int user_gesture, int is_redirect)
         {
             CheckSelf(self);
 
             var m_browser = CefBrowser.FromNative(browser);
             var m_frame = CefFrame.FromNative(frame);
             var m_request = CefRequest.FromNative(request);
+            var m_userGesture = user_gesture != 0;
             var m_isRedirect = is_redirect != 0;
 
-            var result = OnBeforeBrowse(m_browser, m_frame, m_request, m_isRedirect);
+            var result = OnBeforeBrowse(m_browser, m_frame, m_request, m_userGesture, m_isRedirect);
 
             return result ? 1 : 0;
         }
@@ -34,9 +35,11 @@
         /// If the navigation is allowed CefLoadHandler::OnLoadStart and
         /// CefLoadHandler::OnLoadEnd will be called. If the navigation is canceled
         /// CefLoadHandler::OnLoadError will be called with an |errorCode| value of
-        /// ERR_ABORTED.
+        /// ERR_ABORTED. The |user_gesture| value will be true if the browser
+        /// navigated via explicit user gesture (e.g. clicking a link) or false if it
+        /// navigated automatically (e.g. via the DomContentLoaded event).
         /// </summary>
-        protected virtual bool OnBeforeBrowse(CefBrowser browser, CefFrame frame, CefRequest request, bool isRedirect)
+        protected virtual bool OnBeforeBrowse(CefBrowser browser, CefFrame frame, CefRequest request, bool userGesture, bool isRedirect)
         {
             return false;
         }
@@ -281,6 +284,57 @@
         protected virtual bool GetAuthCredentials(CefBrowser browser, CefFrame frame, bool isProxy, string host, int port, string realm, string scheme, CefAuthCallback callback)
         {
             return false;
+        }
+
+
+        private int can_get_cookies(cef_request_handler_t* self, cef_browser_t* browser, cef_frame_t* frame, cef_request_t* request)
+        {
+            CheckSelf(self);
+
+            var mBrowser = CefBrowser.FromNative(browser);
+            var mFrame = CefFrame.FromNative(frame);
+            var mRequest = CefRequest.FromNative(request);
+
+            var mResult = CanGetCookies(mBrowser, mFrame, mRequest);
+
+            return mResult ? 1 : 0;
+        }
+
+        /// <summary>
+        /// Called on the IO thread before sending a network request with a "Cookie"
+        /// request header. Return true to allow cookies to be included in the network
+        /// request or false to block cookies. The |request| object should not be
+        /// modified in this callback.
+        /// </summary>
+        protected virtual bool CanGetCookies(CefBrowser browser, CefFrame frame, CefRequest request)
+        {
+            return true;
+        }
+
+
+        private int can_set_cookie(cef_request_handler_t* self, cef_browser_t* browser, cef_frame_t* frame, cef_request_t* request, cef_cookie_t* cookie)
+        {
+            CheckSelf(self);
+
+            var mBrowser = CefBrowser.FromNative(browser);
+            var mFrame = CefFrame.FromNative(frame);
+            var mRequest = CefRequest.FromNative(request);
+            var mCookie = CefCookie.FromNative(cookie);
+
+            var mResult = CanSetCookie(mBrowser, mFrame, mRequest, mCookie);
+
+            return mResult ? 1 : 0;
+        }
+
+        /// <summary>
+        /// Called on the IO thread when receiving a network request with a
+        /// "Set-Cookie" response header value represented by |cookie|. Return true to
+        /// allow the cookie to be stored or false to block the cookie. The |request|
+        /// object should not be modified in this callback.
+        /// </summary>
+        protected virtual bool CanSetCookie(CefBrowser browser, CefFrame frame, CefRequest request, CefCookie cookie)
+        {
+            return true;
         }
 
 

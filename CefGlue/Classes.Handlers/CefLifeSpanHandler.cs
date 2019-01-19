@@ -46,7 +46,7 @@
         }
 
         /// <summary>
-        /// Called on the IO thread before a new popup browser is created. The
+        /// Called on the UI thread before a new popup browser is created. The
         /// |browser| and |frame| values represent the source of the popup request. The
         /// |target_url| and |target_frame_name| values indicate where the popup
         /// browser should navigate and may be empty if not specified with the request.
@@ -63,7 +63,9 @@
         /// false the new browser will not be scriptable and may not be hosted in the
         /// same renderer process as the source browser. Any modifications to
         /// |windowInfo| will be ignored if the parent browser is wrapped in a
-        /// CefBrowserView.
+        /// CefBrowserView. Popup browser creation will be canceled if the parent
+        /// browser is destroyed before the popup browser creation completes (indicated
+        /// by a call to OnAfterCreated for the popup browser).
         /// </summary>
         protected virtual bool OnBeforePopup(CefBrowser browser, CefFrame frame, string targetUrl, string targetFrameName, CefWindowOpenDisposition targetDisposition, bool userGesture, CefPopupFeatures popupFeatures, CefWindowInfo windowInfo, ref CefClient client, CefBrowserSettings settings, ref bool noJavascriptAccess)
         {

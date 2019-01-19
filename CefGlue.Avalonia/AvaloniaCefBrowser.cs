@@ -1169,12 +1169,6 @@ namespace CefGlue.Avalonia
                             windowInfo.SetAsWindowless(hParentWnd, AllowsTransparency);
 
                             var settings = new CefBrowserSettings();
-
-                            settings.DefaultEncoding = "UTF-8";
-                            settings.FileAccessFromFileUrls = CefState.Enabled;
-                            settings.UniversalAccessFromFileUrls = CefState.Enabled;
-                            settings.WebSecurity = CefState.Enabled;
-
                             _cefClient = new WpfCefClient(this);
 
                             _messageReceiveCompletionSource = new TaskCompletionSource<string>();

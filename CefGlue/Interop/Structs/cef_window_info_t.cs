@@ -24,17 +24,9 @@ namespace Xilium.CefGlue.Interop
         public int height;
         public IntPtr parent_window;
         public IntPtr menu;
-
-        // If window rendering is disabled no browser window will be created. Set
-        // |parent_window| to be used for identifying monitor info
-        // (MonitorFromWindow). If |parent_window| is not provided the main screen
-        // monitor will be used.
         public int windowless_rendering_enabled;
-
-        // Set to true to enable transparent painting.
-        public int transparent_painting_enabled;
-
-        // Handle for the new browser window.
+        public int shared_texture_enabled;
+        public int external_begin_frame_enabled;
         public IntPtr window;
 
         #region Alloc & Free
@@ -69,10 +61,10 @@ namespace Xilium.CefGlue.Interop
         public uint y;
         public uint width;
         public uint height;
-
         public IntPtr parent_window;
         public int windowless_rendering_enabled;
-        public int transparent_painting_enabled;
+        public int shared_texture_enabled;
+        public int external_begin_frame_enabled;
         public IntPtr window;
 
         #region Alloc & Free
@@ -108,14 +100,10 @@ namespace Xilium.CefGlue.Interop
         public int width;
         public int height;
         public int hidden;
-
-        // NSView pointer for the parent view.
         public IntPtr parent_view;
-
         public int windowless_rendering_enabled;
-        public int transparent_painting_enabled;
-
-        // NSView pointer for the new browser view.
+        public int shared_texture_enabled;
+        public int external_begin_frame_enabled;
         public IntPtr view;
 
         #region Alloc & Free

@@ -130,16 +130,23 @@
         /// monitor will be used and some functionality that requires a parent window
         /// may not function correctly. In order to create windowless browsers the
         /// CefSettings.windowless_rendering_enabled value must be set to true.
+        /// Transparent painting is enabled by default but can be disabled by setting
+        /// CefBrowserSettings.background_color to an opaque value.
         /// </summary>
         public abstract bool WindowlessRenderingEnabled { get; set; }
 
         /// <summary>
-        /// Set to true (1) to enable transparent painting in combination with
-        /// windowless rendering. When this value is true a transparent background
-        /// color will be used (RGBA=0x00000000). When this value is false the
-        /// background will be white and opaque.
+        /// Set to <c>true</c> to enable shared textures for windowless rendering. Only
+        /// valid if windowless_rendering_enabled above is also set to true. Currently
+        /// only supported on Windows (D3D11).
         /// </summary>
-        public abstract bool TransparentPaintingEnabled { get; set; }
+        public abstract bool SharedTextureEnabled { get; set; }
+
+        /// <summary>
+        /// Set to <c>true</c> to enable the ability to issue BeginFrame requests from the
+        /// client application by calling CefBrowserHost::SendExternalBeginFrame.
+        /// </summary>
+        public abstract bool ExternalBeginFrameEnabled { get; set; }
 
         public void SetAsChild(IntPtr parentHandle, CefRectangle rect)
         {
@@ -183,7 +190,6 @@
         {
             WindowlessRenderingEnabled = true;
             ParentHandle = parentHandle;
-            TransparentPaintingEnabled = transparent;
         }
     }
 }
