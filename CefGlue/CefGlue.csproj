@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Raising.CefGlue</AssemblyName>
+    <Version>3.3578.1860</Version>
+    <Company>Raising Studio</Company>
+    <Authors>zhongzf@126.com</Authors>
+    <PackageProjectUrl>https://github.com/zhongzf/CefGlue.Core</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/zhongzf/CefGlue.Core</RepositoryUrl>
+    <Description>Xilium.CefGlue is a .NET/Mono binding for the popular Chromium Embedded Framework (CEF).</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
