@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Raising.CefGlue.Avalonia</AssemblyName>
-    <Version>0.7.0</Version>
+    <Version>0.7.0.0001</Version>
     <Authors>zhongzf@126.com</Authors>
     <Company>Raising Studio</Company>
     <PackageProjectUrl>https://github.com/zhongzf/CefGlue.Core</PackageProjectUrl>

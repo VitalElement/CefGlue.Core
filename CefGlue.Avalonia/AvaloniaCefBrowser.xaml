@@ -1,4 +1,4 @@
-﻿<Style xmlns="https://github.com/avaloniaui" xmlns:local="clr-namespace:CefGlue.Avalonia;assembly=CefGlue.Avalonia" Selector="local|AvaloniaCefBrowser">
+﻿<Style xmlns="https://github.com/avaloniaui" xmlns:local="clr-namespace:CefGlue.Avalonia;assembly=Raising.CefGlue.Avalonia" Selector="local|AvaloniaCefBrowser">
     <Setter Property="Template">
         <ControlTemplate>
             <Border BorderBrush="{TemplateBinding BorderBrush}" 

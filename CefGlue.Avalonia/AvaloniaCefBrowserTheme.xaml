@@ -1,4 +1,4 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui">
-    <StyleInclude Source="resm:CefGlue.Avalonia.AvaloniaCefBrowser.xaml?assembly=CefGlue.Avalonia"/>
+    <StyleInclude Source="resm:CefGlue.Avalonia.AvaloniaCefBrowser.xaml?assembly=Raising.CefGlue.Avalonia"/>
 </Styles>
 
