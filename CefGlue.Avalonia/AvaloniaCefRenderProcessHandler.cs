@@ -1,13 +1,14 @@
-﻿using Xilium.CefGlue;
+﻿using System;
+using Xilium.CefGlue;
 
 namespace CefGlue.Avalonia
 {
     public class AvaloniaCefRenderProcessHandler : CefRenderProcessHandler
-    {    
+    {
         protected override bool OnProcessMessageReceived(CefBrowser browser, CefProcessId sourceProcess, CefProcessMessage message)
         {
-            if(message.Name == "executeJs")
-            {                
+            if (message.Name == "executeJs")
+            {
                 var context = browser.GetMainFrame().V8Context;
 
                 context.TryEval(message.Arguments.GetString(0), message.Arguments.GetString(1), 1, out CefV8Value value, out CefV8Exception exception);
@@ -23,6 +24,14 @@ namespace CefGlue.Avalonia
             }
 
             return false;
+        }
+
+        public event EventHandler WebKitInitialized;
+
+        protected override void OnWebKitInitialized()
+        {
+            WebKitInitialized?.Invoke(this, EventArgs.Empty);
+            base.OnWebKitInitialized();
         }
     }
 }

@@ -1,9 +1,13 @@
-﻿using Xilium.CefGlue;
+﻿using System;
+using Xilium.CefGlue;
 
 namespace CefGlue.Avalonia
 {
     internal sealed class SampleCefApp : CefApp
     {
+        public event EventHandler WebKitInitialized;
+        public event RegisterCustomSchemesHandler RegisterCustomSchemes;
+
         public SampleCefApp()
         {
         }
@@ -33,7 +37,19 @@ namespace CefGlue.Avalonia
 
         protected override CefRenderProcessHandler GetRenderProcessHandler()
         {
-            return new AvaloniaCefRenderProcessHandler();
+            var handler = new AvaloniaCefRenderProcessHandler();
+            handler.WebKitInitialized += Handler_WebKitInitialized;
+            return handler;
+        }
+
+        private void Handler_WebKitInitialized(object sender, System.EventArgs e)
+        {
+            WebKitInitialized?.Invoke(sender, e);
+        }
+
+        protected override void OnRegisterCustomSchemes(CefSchemeRegistrar registrar)
+        {
+            RegisterCustomSchemes?.Invoke(this, new RegisterCustomSchemesEventArgs(registrar));
         }
     }
 }
