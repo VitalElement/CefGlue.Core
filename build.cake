@@ -4,7 +4,7 @@
 
 #addin "nuget:?package=Polly&version=5.0.6"
 #addin "nuget:?package=SharpZipLib&version=0.86.0"
-#addin "nuget:?package=Cake.Compression&version=0.2.1"
+#addin "nuget:?package=Cake.Compression&version=0.2.3"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -61,9 +61,9 @@ var isRunningOnAppVeyor = BuildSystem.AppVeyor.IsRunningOnAppVeyor;
 var isPullRequest = BuildSystem.AppVeyor.Environment.PullRequest.IsPullRequest;
 var isMainRepo = StringComparer.OrdinalIgnoreCase.Equals(MainRepo, BuildSystem.AppVeyor.Environment.Repository.Name);
 var isMasterBranch = StringComparer.OrdinalIgnoreCase.Equals(MasterBranch, BuildSystem.AppVeyor.Environment.Repository.Branch);
-var isTagged = BuildSystem.AppVeyor.Environment.Repository.Tag.IsTag 
+var isTagged = BuildSystem.AppVeyor.Environment.Repository.Tag.IsTag
                && !string.IsNullOrWhiteSpace(BuildSystem.AppVeyor.Environment.Repository.Tag.Name);
-var isReleasable = StringComparer.OrdinalIgnoreCase.Equals(ReleasePlatform, platform) 
+var isReleasable = StringComparer.OrdinalIgnoreCase.Equals(ReleasePlatform, platform)
                    && StringComparer.OrdinalIgnoreCase.Equals(ReleaseConfiguration, configuration);
 var isMyGetRelease = !isTagged && isReleasable;
 var isNuGetRelease = isTagged && isReleasable;
@@ -99,19 +99,19 @@ var zipRootDir = artifactsDir.Combine("zip");
 var nugetRoot = artifactsDir.Combine("nuget");
 var fileZipSuffix = ".zip";
 
-var buildDirs = 
-    GetDirectories("./**/bin/") + 
+var buildDirs =
+    GetDirectories("./**/bin/") +
     GetDirectories("./**/obj/");
 
 
 var netCoreAppsRoot= ".";
 var netCoreApps = new string[] { "CefGlue.Samples.Avalonia" };
-var netCoreProjects = netCoreApps.Select(name => 
+var netCoreProjects = netCoreApps.Select(name =>
     new {
         Path = string.Format("{0}/{1}", netCoreAppsRoot, name),
         Name = name,
         Framework = XmlPeek(string.Format("{0}/{1}/{1}.csproj", netCoreAppsRoot, name), "//*[local-name()='TargetFramework']/text()"),
-        Runtimes = XmlPeek(string.Format("{0}/{1}/{1}.csproj", netCoreAppsRoot, name), "//*[local-name()='RuntimeIdentifiers']/text()").Split(';')        
+        Runtimes = XmlPeek(string.Format("{0}/{1}/{1}.csproj", netCoreAppsRoot, name), "//*[local-name()='RuntimeIdentifiers']/text()").Split(';')
     }).ToList();
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -130,8 +130,8 @@ System.IO.Directory.EnumerateFiles(((DirectoryPath)Directory(".")).FullPath, "*.
     {
         var name = reference.Attribute("Include").Value;
         var versionAttribute = reference.Attribute("Version");
-        var packageVersion = versionAttribute != null 
-            ? versionAttribute.Value 
+        var packageVersion = versionAttribute != null
+            ? versionAttribute.Value
             : reference.Elements().First(x=>x.Name.LocalName == "Version").Value;
         IList<Tuple<string, string>> versions;
         packageVersions.TryGetValue(name, out versions);
@@ -180,7 +180,7 @@ var nuspecNuGetBehaviors = new NuGetPackSettings()
     NoPackageAnalysis = true,
     Description = "Port of CEFGlue to NetStandard1.6.",
     Copyright = "Copyright 2017",
-    Tags = new [] { "Avalonia", "CEF", "CEFGlue", "Core", "Dotnet", "Browser", "Control" },    
+    Tags = new [] { "Avalonia", "CEF", "CEFGlue", "Core", "Dotnet", "Browser", "Control" },
     Files = new []
     {
         new NuSpecContent { Source = "CefGlue/bin/" + configuration + "/netstandard1.6/CefGlue.dll", Target = "lib/netstandard1.6" },
@@ -271,6 +271,30 @@ nuspecNuGetBehaviors = new NuGetPackSettings()
 
 nuspecNuGetSettings.Add(nuspecNuGetBehaviors);
 
+nuspecNuGetBehaviors = new NuGetPackSettings()
+{
+    Id = "VitalElement.CefGlue.Core.Linux-x64",
+    Version = version,
+    Authors = new [] { "VitalElement" },
+    Owners = new [] { "Dan Walmsley (dan at walms.co.uk)" },
+    LicenseUrl = new Uri("http://opensource.org/licenses/MIT"),
+    ProjectUrl = new Uri("https://github.com/VitalElement/CefGlue.Core/"),
+    RequireLicenseAcceptance = false,
+    Symbols = false,
+    NoPackageAnalysis = true,
+    Description = "CEF Glue support for Avalonia",
+    Copyright = "Copyright 2017",
+    Tags = new [] { "Avalonia", "CEF", "CEFGlue", "Core", "Dotnet", "Browser", "Control" },
+    Files = new []
+    {
+        new NuSpecContent { Source = "**", Target = "runtimes/linux-x64/native" },
+        new NuSpecContent { Source = "VitalElement.CefGlue.NativeSupport.targets", Target = "build/net45/VitalElement.CefGlue.Core.Linux-x64.targets" }
+    },
+    BasePath = Directory("./artifacts/linux-x64"),
+    OutputDirectory = nugetRoot
+};
+
+nuspecNuGetSettings.Add(nuspecNuGetBehaviors);
 
 var nugetPackages = nuspecNuGetSettings.Select(nuspec => {
     return nuspec.OutputDirectory.CombineWithFilePath(string.Concat(nuspec.Id, ".", nuspec.Version, ".nupkg"));
@@ -280,45 +304,65 @@ var nugetPackages = nuspecNuGetSettings.Select(nuspec => {
 // 3rd Party Downloads
 ///////////////////////////////////////////////////////////////////////////////
 
-var toolchainDownloads = new List<ToolchainDownloadInfo> 
-{ 
+var toolchainDownloads = new List<ToolchainDownloadInfo>
+{
     new ToolchainDownloadInfo (artifactsDir)
-    { 
-        RID = "win-x64", 
+    {
+        RID = "win-x64",
         Downloads = new List<ArchiveDownloadInfo>()
-        { 
+        {
             new ArchiveDownloadInfo()
-            { 
-                Format = "tar.bz2", 
-                DestinationFile = "wincef.tar.bz2", 
+            {
+                Format = "tar.bz2",
+                DestinationFile = "wincef.tar.bz2",
                 URL =  "http://opensource.spotify.com/cefbuilds/cef_binary_3.2987.1590.g1f1b268_windows64_client.tar.bz2",
                 Name = "cef_binary_3.2987.1590.g1f1b268_windows64_client",
                 PostExtract = (curDir, info) =>{
                     Utils.MoveFolderContents(curDir.Combine(info.Name).Combine("Release").ToString(), curDir.ToString());
                     DeleteDirectory(curDir.Combine(info.Name), true);
 
-                    CopyFile ("./VitalElement.CefGlue.NativeSupport.targets", curDir.CombineWithFilePath("VitalElement.CefGlue.NativeSupport.targets"));              
+                    CopyFile ("./VitalElement.CefGlue.NativeSupport.targets", curDir.CombineWithFilePath("VitalElement.CefGlue.NativeSupport.targets"));
                 }
             }
         }
     },
     new ToolchainDownloadInfo (artifactsDir)
-    { 
-        RID = "osx", 
+    {
+        RID = "osx",
         Downloads = new List<ArchiveDownloadInfo>()
-        { 
+        {
             new ArchiveDownloadInfo()
-            { 
-                Format = "tar.bz2", 
-                DestinationFile = "osxcef.tar.bz2", 
+            {
+                Format = "tar.bz2",
+                DestinationFile = "osxcef.tar.bz2",
                 URL =  "http://opensource.spotify.com/cefbuilds/cef_binary_3.2987.1590.g1f1b268_macosx64_client.tar.bz2",
                 Name = "cef_binary_3.2987.1590.g1f1b268_macosx64_client",
                 PostExtract = (curDir, info) =>{
                     Utils.MoveFolderContents(curDir.Combine(info.Name).Combine("Release/cefclient.app/Contents/Frameworks").ToString(), curDir.ToString());
                     DeleteDirectory(curDir.Combine(info.Name), true);
-                    DeleteDirectory(curDir.Combine("cefclient Helper.app"), true);      
+                    DeleteDirectory(curDir.Combine("cefclient Helper.app"), true);
 
-                    CopyFile ("./VitalElement.CefGlue.NativeSupport.targets", curDir.CombineWithFilePath("VitalElement.CefGlue.NativeSupport.targets"));              
+                    CopyFile ("./VitalElement.CefGlue.NativeSupport.targets", curDir.CombineWithFilePath("VitalElement.CefGlue.NativeSupport.targets"));
+                }
+            }
+        }
+    },
+    new ToolchainDownloadInfo (artifactsDir)
+    {
+        RID = "linux-x64",
+        Downloads = new List<ArchiveDownloadInfo>()
+        {
+            new ArchiveDownloadInfo()
+            {
+                Format = "tar.bz2",
+                DestinationFile = "linuxcef.tar.bz2",
+                URL =  "http://opensource.spotify.com/cefbuilds/cef_binary_3.2987.1590.g1f1b268_linux64_client.tar.bz2",
+                Name = "cef_binary_3.2987.1590.g1f1b268_linux64_client",
+                PostExtract = (curDir, info) =>{
+                    Utils.MoveFolderContents(curDir.Combine(info.Name).Combine("Release").ToString(), curDir.ToString());
+                    DeleteDirectory(curDir.Combine(info.Name), true);
+
+                    CopyFile ("./VitalElement.CefGlue.NativeSupport.targets", curDir.CombineWithFilePath("VitalElement.CefGlue.NativeSupport.targets"));
                 }
             }
         }
@@ -329,7 +373,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
 // INFORMATION
 ///////////////////////////////////////////////////////////////////////////////
 
-Information("Building version {0} of CefGlue.Core ({1}, {2}, {3}) using version {4} of Cake.", 
+Information("Building version {0} of CefGlue.Core ({1}, {2}, {3}) using version {4} of Cake.",
     version,
     platform,
     configuration,
@@ -359,17 +403,17 @@ Information("IsNuGetRelease: " + isNuGetRelease);
 
 ///////////////////////////////////////////////////////////////////////////////
 // TASKS
-/////////////////////////////////////////////////////////////////////////////// 
+///////////////////////////////////////////////////////////////////////////////
 
 Task("Clean")
-.Does(()=>{    
+.Does(()=>{
     CleanDirectories(buildDirs);
     CleanDirectory(artifactsDir);
     CleanDirectory(nugetRoot);
 
     foreach(var tc in toolchainDownloads)
     {
-        CleanDirectory(tc.BaseDir);   
+        CleanDirectory(tc.BaseDir);
         CleanDirectory(tc.ZipDir);
     }
 });
@@ -416,7 +460,7 @@ Task("Extract")
                 case "tar.xz":
                 StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", fileName, dest) });
                 break;
-            }        
+            }
 
             if(downloadInfo.PostExtract != null)
             {
@@ -472,7 +516,7 @@ Task("Publish-NetCore")
             {
                 Information("Patching executable subsystem for: {0}, runtime: {1}", project.Name, runtime);
                 var targetExe = outputDir.CombineWithFilePath(project.Name + ".exe");
-                var exitCodeWithArgument = StartProcess(editbin, new ProcessSettings { 
+                var exitCodeWithArgument = StartProcess(editbin, new ProcessSettings {
                     Arguments = "/subsystem:windows " + targetExe.FullPath
                 });
                 Information("The editbin command exit code: {0}", exitCodeWithArgument);
@@ -492,10 +536,10 @@ Task("Zip-NetCore")
         {
             var outputDir = zipRootDir.Combine(project.Name + "-" + runtime);
 
-            Zip(outputDir.FullPath, zipRootDir.CombineWithFilePath(project.Name + "-" + runtime + fileZipSuffix), 
+            Zip(outputDir.FullPath, zipRootDir.CombineWithFilePath(project.Name + "-" + runtime + fileZipSuffix),
                 GetFiles(outputDir.FullPath + "/*.*"));
         }
-    }    
+    }
 });
 
 
@@ -513,19 +557,19 @@ Task("Generate-NuGetPackages")
 });
 
 Task("Publish-AppVeyorNuget")
-    .IsDependentOn("Generate-NuGetPackages")        
+    .IsDependentOn("Generate-NuGetPackages")
     .WithCriteria(() => isMainRepo)
-    .WithCriteria(() => isMasterBranch)    
+    .WithCriteria(() => isMasterBranch)
     .Does(() =>
 {
     var apiKey = EnvironmentVariable("MYGET_API_KEY");
-    if(string.IsNullOrEmpty(apiKey)) 
+    if(string.IsNullOrEmpty(apiKey))
     {
         throw new InvalidOperationException("Could not resolve MyGet API key.");
     }
 
     var apiUrl = EnvironmentVariable("MYGET_API_URL");
-    if(string.IsNullOrEmpty(apiUrl)) 
+    if(string.IsNullOrEmpty(apiUrl))
     {
         throw new InvalidOperationException("Could not resolve MyGet API url.");
     }
@@ -539,7 +583,7 @@ Task("Publish-AppVeyorNuget")
     }
 });
 
-Task("Default")    
+Task("Default")
     .IsDependentOn("Publish-AppVeyorNuget");
-    
+
 RunTarget(target);

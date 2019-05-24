@@ -10,9 +10,6 @@ public static class Utils
 {
     public static bool MoveFolderContents(string SourcePath, string DestinationPath)
     {
-        SourcePath = SourcePath.EndsWith(@"\") ? SourcePath : SourcePath + @"\";
-        DestinationPath = DestinationPath.EndsWith(@"\") ? DestinationPath : DestinationPath + @"\";
-        
         try
         {
             if (System.IO.Directory.Exists(SourcePath))
@@ -21,19 +18,19 @@ public static class Utils
                 {
                     System.IO.Directory.CreateDirectory(DestinationPath);
                 }
-         
+
                 foreach (string files in System.IO.Directory.GetFiles(SourcePath))
                 {
                     FileInfo fileInfo = new FileInfo(files);
-                    fileInfo.MoveTo(string.Format(@"{0}\{1}", DestinationPath, fileInfo.Name));
+                    fileInfo.MoveTo(System.IO.Path.Combine(DestinationPath, fileInfo.Name));
                 }
-         
+
                 foreach (string drs in System.IO.Directory.GetDirectories(SourcePath))
                 {
                     System.IO.DirectoryInfo directoryInfo = new DirectoryInfo(drs);
-                    if (MoveFolderContents(drs, DestinationPath + directoryInfo.Name) == false)
+                    if (MoveFolderContents(drs, System.IO.Path.Combine(DestinationPath, directoryInfo.Name)) == false)
                     {
-                    return false;
+                        return false;
                     }
                 }
             }
@@ -70,5 +67,5 @@ public class ToolchainDownloadInfo
     public DirectoryPath ZipDir {get { return _artifactsDir.Combine("zip").Combine(RID); } }
 
     public string RID {get; set;}
-    public List<ArchiveDownloadInfo> Downloads {get; set;}    
+    public List<ArchiveDownloadInfo> Downloads {get; set;}
 }

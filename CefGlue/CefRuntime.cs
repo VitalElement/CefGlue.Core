@@ -22,16 +22,13 @@
         #region Platform Detection
         private static CefRuntimePlatform DetectPlatform()
         {
-            /*var platformId = Environment.OSVersion.Platform;
-
-            if (platformId == PlatformID.MacOSX)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+                return CefRuntimePlatform.Linux;
+            } else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
                 return CefRuntimePlatform.MacOSX;
-
-            int p = (int)platformId;
-            if ((p == 4) || (p == 128))
-                return IsRunningOnMac() ? CefRuntimePlatform.MacOSX : CefRuntimePlatform.Linux;*/
-
-            return CefRuntimePlatform.Windows;
+            } else {
+                return CefRuntimePlatform.Windows;
+            }
         }
 
         //From Managed.Windows.Forms/XplatUI
