@@ -1770,7 +1770,7 @@ namespace CefGlue.Avalonia
 
         internal void GetScreenPoint(int viewX, int viewY, ref int screenX, ref int screenY)
         {
-            Point ptScreen = new Point();
+            PixelPoint ptScreen = new PixelPoint();
 
             //Dispatcher.UIThread.InvokeAsync(()=>
             {
@@ -1785,8 +1785,8 @@ namespace CefGlue.Avalonia
                 }
             }//);
 
-            screenX = (int)ptScreen.X;
-            screenY = (int)ptScreen.Y;
+            screenX = ptScreen.X;
+            screenY = ptScreen.Y;
         }
 
         internal void HandleViewPaint(CefBrowser browser, CefPaintElementType type, CefRectangle[] dirtyRects, IntPtr buffer, int width, int height)
